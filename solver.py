@@ -15,6 +15,33 @@ current_grid = [
     ['g','a','l','r','t','s','y']
 ]
 
+_end = '_end_'
+
+def make_trie(words):
+    root = dict()
+    for word in words:
+        current_dict = root
+        for letter in word:
+            current_dict = current_dict.setdefault(letter, {})
+        current_dict[_end] = _end
+    return root
+
+def in_trie(trie, word):
+    current_dict = trie
+    for letter in word:
+        if letter not in current_dict:
+            return False
+        current_dict = current_dict[letter]
+    return _end in current_dict
+
+with open('words.json') as f:
+    words = json.load(f)
+    max_length = max([len(x) for x in words]) # 8
+    min_length = min([len(x) for x in words]) # 4
+
+    # convert this to a trie for quick lookups
+    trie = make_trie(words)
+
 class Shape:
 
     # Squares is a list of points in lexical order
@@ -57,6 +84,39 @@ class Shape:
         # We should check some word validity here to prune bad options
         return basic_squares
 
+    def couldExpandToWord(this):
+        if len(this.squares) == max_length:
+            return in_trie(trie, this.getCurrentWord())
+        # Bail out if it's relatively short
+        if (len(this.squares) < 4):
+            return True
+        continuous_chunks = []
+        last_square = None
+        for square in this.squares:
+            # Start it off
+            if last_square is None:
+                chunk = this.grid[square[0]][square[1]]
+            elif last_square[0] == square[0] and last_square[1] + 1 == square[1]:
+                chunk += this.grid[square[0]][square[1]]
+            else:
+                continuous_chunks.append(chunk)
+                chunk = this.grid[square[0]][square[1]]
+            last_square = square
+        continuous_chunks.append(chunk)
+        potential_words = []
+        for word in words:
+            last_index = -1
+            is_valid = True
+            for chunk in continuous_chunks:
+                i = word.find(chunk)
+                if i == -1 or i < last_index:
+                    is_valid = False
+                    break
+                last_index = i
+            if is_valid:
+                potential_words.append(word)
+        return len(potential_words) > 0
+
     def getExpandedShapes(this):
         cells = this.getExpansionCells()
         shapes = []
@@ -64,7 +124,9 @@ class Shape:
             squares = [x for x in this.squares]
             squares.append(cell)
             squares.sort()
-            shapes.append(Shape(this.grid, squares))
+            new_shape = Shape(this.grid, squares)
+            if new_shape.couldExpandToWord():
+                shapes.append(Shape(this.grid, squares))
         return shapes
 
     def printShape(this):
@@ -79,7 +141,8 @@ class Shape:
 
 
 # a = Shape(current_grid, (0, 0))
-seed = Shape(current_grid, [(1, 2)])
+# seed = Shape(current_grid, [(1, 2)])
+seed = Shape(current_grid, [(0, 0)])
 shapes = [seed]
 all_shapes = []
 for i in range(0, 7):
@@ -90,17 +153,8 @@ for i in range(0, 7):
     shapes = x
     if (i >= 2):
         all_shapes += x
-all_shapes[-1].printShape()
-all_shapes[0].printShape()
 
 print(len(all_shapes))
-# shape =
-# print(shape.getCurrentWord())
-# shapes = shape.getExpandedShapes()
-# for shape in shapes:
-#     new_shapes = shape.getExpandedShapes()
-#     for s in new_shapes:
-#         s.printShape()
 
 # start at R*
 # determine which cells are open to take
@@ -111,90 +165,13 @@ print(len(all_shapes))
 # if it is, add it to the valid shapes
 # continue up to a length of 8
 
-# def valid_shapes(count):
-
-#     print(count)
-
-# def valid_shapes_length_one():
-#     return [
-#         [ (0, 0) ]
-#     ]
-
-# def valid_shapes_length_two():
-#     return [
-#         [ (0, 0), (0, 1) ],
-#         [ (0, 0), (1, 0) ],
-#     ]
-
-# # Get all of the potential shapes of length 4 (to start)
-# # ~86k total (heuristic)
-# def generate_valid_shapes(length):
-#     start = (0, 0)
-
-#     # choose any direction, 4 times
-#     # 1 -> 1
-#     # 2 -> 2
-#     # 3 -> 7
-#     # 4 -> 2
-
-#     # 2 -> 4 | 2 -> 2
-#     # 3 -> 16 | 6 -> 2.6
-#     # 4 -> 64 | 19 -> 3.36
-#     # 5 -> 256
-#     # 6 -> 1,024
-#     # 7 -> 4,096
-#     # 8 -> 16,384
-#     shape = []
-#     return []
-
-# generate_valid_shapes(1)
-
-# # def valid_shape_helper(start, min_length, max_length, valid_shapes, current_shape):
-# #     for shape in valid_shapes:
-# #         if len(shape) < max_length:
-# #             left_r = shape[-1][0]
-# #             left_c = shape[-1][1] - 1
-# #             if ()
-#     # go left
-#     # go right
-#     # go up
-#     # go down
-
-
-# _end = '_end_'
-
-# def make_trie(words):
-#     root = dict()
-#     for word in words:
-#         current_dict = root
-#         for letter in word:
-#             current_dict = current_dict.setdefault(letter, {})
-#         current_dict[_end] = _end
-#     return root
-
-# def in_trie(trie, word):
-#     current_dict = trie
-#     for letter in word:
-#         if letter not in current_dict:
-#             return False
-#         current_dict = current_dict[letter]
-#     return _end in current_dict
-
-with open('words.json') as f:
-    words = json.load(f)
-    # max_length = max([len(x) for x in words]) # 8
-    # min_length = min([len(x) for x in words]) # 4
-
-    # convert this to a trie for quick lookups
-    # trie = make_trie(words)
-    # print(in_trie(trie, 'aardvark'))
-    # print(in_trie(trie, 'pbest'))
-
+x = []
 for shape in all_shapes:
     word = shape.getCurrentWord()
-    if word in words:
+    if word in words and word not in x:
         print(word)
         shape.printShape()
+        x.append(word)
 
 # download valid wordlist used by the site
 # https://www.andrewt.net/puzzles/cell-tower/assets/words.json
