@@ -142,8 +142,11 @@ class Shape:
             last_index = -1
             is_valid = True
             for chunk in continuous_chunks:
-                i = word.find(chunk)
-                if i == -1 or i < last_index:
+                if (last_index == -1):
+                    i = word.find(chunk)
+                else:
+                    i = word.find(chunk, last_index)
+                if i == -1:
                     is_valid = False
                     break
                 last_index = i
@@ -187,8 +190,6 @@ def find_words_for_seed(seed):
     shapes = [seed]
     all_shapes = []
     for i in range(0, 7):
-        for shape in shapes:
-            shape.printShape()
         x = []
         for shape in shapes:
             new_shapes = shape.getExpandedShapes()
@@ -203,11 +204,9 @@ def find_words_for_seed(seed):
         if word in words and word not in valid_words:
             valid_words.append(word)
             valid_shapes.append(shape)
+    print(seed.squares)
+    print(valid_words)
     return (valid_words, valid_shapes)
-
-print(find_words_for_seed((1, 6)))
-shape()
-exit()
 
 def getKey(square):
     return str(square[0]) + '-' + str(square[1])
@@ -245,8 +244,6 @@ for key in square_mapping:
 def unique_square(sm):
     for key in sm:
         if len(sm[key]) == 1:
-            print(key)
-            print(sm[key][0].squares)
             return sm[key][0]
     return None
 
