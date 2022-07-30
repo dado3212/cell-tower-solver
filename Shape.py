@@ -70,7 +70,7 @@ class Shape:
                     i = word.find(chunk)
                 else:
                     i = word.find(chunk, last_index)
-                if i == -1:
+                if i == -1 or last_index == -1 and i > 0:
                     is_valid = False
                     break
                 last_index = i
