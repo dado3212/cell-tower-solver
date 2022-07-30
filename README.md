@@ -6,4 +6,7 @@ Wordlist downloaded from https://www.andrewt.net/puzzles/cell-tower/assets/words
 Run tests with `python3 tests.py`
 
 Speedups gotten from profiling with `python3 -m cProfile -s time main.py`
-Current speed is 5.168
+
+Current speeds:
+* 2.503 for #??
+* 3.833 for #86

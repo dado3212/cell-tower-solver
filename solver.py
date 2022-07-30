@@ -61,7 +61,9 @@ class Solver:
         this.grid = grid
 
     def find_words_for_seed(this, seed):
-        seed = Shape(this.grid, words, [seed])
+        start = this.grid[seed[0]][seed[1]]
+        xword = [x for x in words if x[0] == start]
+        seed = Shape(this.grid, xword, [seed])
         shapes = [seed]
         all_shapes = []
         for i in range(0, 7):
