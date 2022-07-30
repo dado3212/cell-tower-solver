@@ -18,9 +18,6 @@ class Shape:
 
     # static
     def cellIsValid(this, square):
-        # Can't already be claimed
-        if (square in this.squares):
-            return False
         # Can't be out of bounds
         if (square[0] < 0 or square[0] >= len(this.grid) or square[1] < 0 or square[1] >= len(this.grid[0])):
             return False
@@ -29,6 +26,9 @@ class Shape:
             return False
         # Can't be to the left of the start square if it's the same row
         if (square[0] == this.squares[0][0] and square[1] < this.squares[0][1]):
+            return False
+        # Can't already be claimed
+        if (square in this.squares):
             return False
         return True
 
