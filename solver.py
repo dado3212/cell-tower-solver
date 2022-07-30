@@ -15,6 +15,7 @@ current_grid = [
     ['g','a','l','r','t','s','y']
 ]
 
+# 86
 # current_grid = [
 #     ['n','e','i','p','r','o','g'],
 #     ['a','t','h','e','r','e','o'],
@@ -121,9 +122,6 @@ class Shape:
     def couldExpandToWord(this):
         if len(this.squares) == max_length:
             return in_trie(trie, this.getCurrentWord())
-        # Bail out if it's relatively short
-        if (len(this.squares) < 4):
-            return True
         continuous_chunks = []
         last_square = None
         for square in this.squares:
@@ -195,16 +193,13 @@ def find_words_for_seed(seed):
         shapes = x
         if (i >= 2):
             all_shapes += x
-    valid_words = []
     valid_shapes = []
     for shape in all_shapes:
         word = shape.getCurrentWord()
-        if word in words and word not in valid_words:
-            valid_words.append(word)
+        if word in words and shape not in valid_shapes:
             valid_shapes.append(shape)
     print(seed.squares)
-    print(valid_words)
-    return (valid_words, valid_shapes)
+    return valid_shapes
 
 def getKey(square):
     return str(square[0]) + '-' + str(square[1])
@@ -220,9 +215,7 @@ for r in range(0, len(current_grid)):
     for c in range(0, len(current_grid[r])):
         square = (r, c)
         key = getKey(square)
-        x = find_words_for_seed(square)
-        valid_words = x[0]
-        valid_shapes = x[1]
+        valid_shapes = find_words_for_seed(square)
         for shape in valid_shapes:
             for square in shape.squares:
                 key = getKey(square)
@@ -266,6 +259,25 @@ def has_solution(sm):
             return False
     return True
 
+def printShapes(grid, solution):
+    i = 0
+    for shape in solution:
+        shape.setColor(colors[i])
+        i = (i+1) % len(colors)
+
+    for r in range(0, len(grid)):
+        row = ""
+        for c in range(0, len(grid[r])):
+            found_cell = False
+            for shape in solution:
+                if (r, c) in shape.squares:
+                    row += shape.getColor() + grid[r][c] + Colors.ENDC
+                    found_cell = True
+                    break
+            if not found_cell:
+                row += '_'
+        print(row)
+
 print("Built mapping")
 for key in square_mapping:
     print(key)
@@ -287,25 +299,6 @@ while True:
     else:
         solution.append(unique)
         square_mapping = reduced_map(square_mapping, unique)
-
-def printShapes(grid, solution):
-    i = 0
-    for shape in solution:
-        shape.setColor(colors[i])
-        i = (i+1) % len(colors)
-
-    for r in range(0, len(grid)):
-        row = ""
-        for c in range(0, len(grid[r])):
-            found_cell = False
-            for shape in solution:
-                if (r, c) in shape.squares:
-                    row += shape.getColor() + grid[r][c] + Colors.ENDC
-                    found_cell = True
-                    break
-            if not found_cell:
-                row += '_'
-        print(row)
 
 printShapes(current_grid, solution)
 for pos in square_mapping:
