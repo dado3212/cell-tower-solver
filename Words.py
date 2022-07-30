@@ -28,3 +28,17 @@ def is_valid_word(word):
             return False
         current_dict = current_dict[letter]
     return _end in current_dict
+
+def chunk_matches_word(word, chunks):
+    last_index = -1
+    is_valid = True
+    for chunk in chunks:
+        if (last_index == -1):
+            i = word.find(chunk)
+        else:
+            i = word.find(chunk, last_index)
+        if i == -1 or last_index == -1 and i > 0:
+            is_valid = False
+            break
+        last_index = i + len(chunk)
+    return is_valid

@@ -1,4 +1,4 @@
-from Words import max_length, is_valid_word
+from Words import max_length, is_valid_word, chunk_matches_word
 
 class Shape:
     def __eq__(self, other):
@@ -63,18 +63,7 @@ class Shape:
         continuous_chunks.append(chunk)
         filtered_potential_words = []
         for word in this.potential_words:
-            last_index = -1
-            is_valid = True
-            for chunk in continuous_chunks:
-                if (last_index == -1):
-                    i = word.find(chunk)
-                else:
-                    i = word.find(chunk, last_index + 1)
-                if i == -1 or last_index == -1 and i > 0:
-                    is_valid = False
-                    break
-                last_index = i
-            if is_valid:
+            if chunk_matches_word(word, continuous_chunks):
                 filtered_potential_words.append(word)
         this.potential_words = filtered_potential_words
         return len(filtered_potential_words) > 0
