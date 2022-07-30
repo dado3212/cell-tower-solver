@@ -1,34 +1,34 @@
 import json
 
-# current_grid = [
-#     ['p','b','e','t','w','e','p'],
-#     ['a','r','t','e','n','r','o'],
-#     ['i','d','a','l','m','i','s'],
-#     ['l','r','a','w','t','e','d'],
-#     ['e','a','d','h','i','r','g'],
-#     ['i','n','h','a','d','r','o'],
-#     ['a','g','i','r','w','o','u'],
-#     ['f','b','l','o','r','k','p'],
-#     ['f','o','w','s','u','e','m'],
-#     ['l','r','d','w','p','d','e'],
-#     ['e','e','e','k','p','o','s'],
-#     ['g','a','l','r','t','s','y']
-# ]
-
 current_grid = [
-    ['n','e','i','p','r','o','g'],
-    ['a','t','h','e','r','e','o'],
-    ['g','r','a','b','s','s','p'],
-    ['e','s','l','u','p','t','i'],
-    ['i','d','e','s','e','b','o'],
-    ['e','n','p','e','t','e','n'],
-    ['t','i','f','r','i','t','s'],
-    ['y','m','e','o','d','t','e'],
-    ['l','a','n','o','v','r','a'],
-    ['i','i','n','g','e','l','b'],
-    ['n','s','r','a','l','l','u'],
-    ['k','p','o','u','n','d','m']
+    ['p','b','e','t','w','e','p'],
+    ['a','r','t','e','n','r','o'],
+    ['i','d','a','l','m','i','s'],
+    ['l','r','a','w','t','e','d'],
+    ['e','a','d','h','i','r','g'],
+    ['i','n','h','a','d','r','o'],
+    ['a','g','i','r','w','o','u'],
+    ['f','b','l','o','r','k','p'],
+    ['f','o','w','s','u','e','m'],
+    ['l','r','d','w','p','d','e'],
+    ['e','e','e','k','p','o','s'],
+    ['g','a','l','r','t','s','y']
 ]
+
+# current_grid = [
+#     ['n','e','i','p','r','o','g'],
+#     ['a','t','h','e','r','e','o'],
+#     ['g','r','a','b','s','s','p'],
+#     ['e','s','l','u','p','t','i'],
+#     ['i','d','e','s','e','b','o'],
+#     ['e','n','p','e','t','e','n'],
+#     ['t','i','f','r','i','t','s'],
+#     ['y','m','e','o','d','t','e'],
+#     ['l','a','n','o','v','r','a'],
+#     ['i','i','n','g','e','l','b'],
+#     ['n','s','r','a','l','l','u'],
+#     ['k','p','o','u','n','d','m']
+# ]
 
 _end = '_end_'
 
@@ -70,7 +70,7 @@ class Colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-colors = [Colors.OKBLUE, Colors.OKCYAN, Colors.OKGREEN, Colors.WARNING, Colors.FAIL]
+colors = [Colors.BOLD, Colors.UNDERLINE, Colors.HEADERS, Colors.OKBLUE, Colors.OKCYAN, Colors.OKGREEN, Colors.WARNING, Colors.FAIL]
 
 class Shape:
 
@@ -183,8 +183,6 @@ class Shape:
     def getColor(this):
         return this.color
 
-# a = Shape(current_grid, (0, 0))
-# seed = Shape(current_grid, [(1, 2)])
 def find_words_for_seed(seed):
     seed = Shape(current_grid, words, [seed])
     shapes = [seed]
@@ -247,6 +245,27 @@ def unique_square(sm):
             return sm[key][0]
     return None
 
+def remove_shape_from_map(sm, shape_to_remove):
+    for square_to_clear in shape_to_remove.squares:
+        key_to_filter = getKey(square_to_clear)
+        sm[key_to_filter] = [x for x in sm[key_to_filter] if x != shape_to_remove]
+
+def reduced_map(sm_orig, shape):
+    sm = sm_orig.copy()
+    for square in shape.squares:
+        filled_key = getKey(square)
+        shapes_to_remove = sm[filled_key]
+        for shape_to_remove in shapes_to_remove:
+            remove_shape_from_map(sm, shape_to_remove)
+        del sm[filled_key]
+    return sm
+
+def has_solution(sm):
+    for key in sm:
+        if len(sm[key]) == 0:
+            return False
+    return True
+
 print("Built mapping")
 for key in square_mapping:
     print(key)
@@ -256,19 +275,20 @@ solution = []
 while True:
     unique = unique_square(square_mapping)
     if unique is None:
-        break
+        # Try and find a word
+        removed_something = False
+        for key in square_mapping:
+            for shape in square_mapping[key]:
+                if not has_solution(reduced_map(square_mapping, shape)):
+                    remove_shape_from_map(square_mapping, shape)
+                    removed_something = True
+        if not removed_something:
+            break
     else:
         solution.append(unique)
-        for square in unique.squares:
-            filled_key = getKey(square)
-            shapes_to_remove = square_mapping[filled_key]
-            for shape_to_remove in shapes_to_remove:
-                for square_to_clear in shape_to_remove.squares:
-                    key_to_filter = getKey(square_to_clear)
-                    square_mapping[key_to_filter] = [x for x in square_mapping[key_to_filter] if x != shape_to_remove]
-            del square_mapping[filled_key]
+        square_mapping = reduced_map(square_mapping, unique)
 
-def printShapes(solution, grid):
+def printShapes(grid, solution):
     i = 0
     for shape in solution:
         shape.setColor(colors[i])
@@ -287,7 +307,7 @@ def printShapes(solution, grid):
                 row += '_'
         print(row)
 
-printShapes(solution, current_grid)
+printShapes(current_grid, solution)
 for pos in square_mapping:
     print(pos)
     for x in square_mapping[pos]:
