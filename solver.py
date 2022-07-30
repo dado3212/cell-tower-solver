@@ -1,18 +1,33 @@
 import json
 
+# current_grid = [
+#     ['p','b','e','t','w','e','p'],
+#     ['a','r','t','e','n','r','o'],
+#     ['i','d','a','l','m','i','s'],
+#     ['l','r','a','w','t','e','d'],
+#     ['e','a','d','h','i','r','g'],
+#     ['i','n','h','a','d','r','o'],
+#     ['a','g','i','r','w','o','u'],
+#     ['f','b','l','o','r','k','p'],
+#     ['f','o','w','s','u','e','m'],
+#     ['l','r','d','w','p','d','e'],
+#     ['e','e','e','k','p','o','s'],
+#     ['g','a','l','r','t','s','y']
+# ]
+
 current_grid = [
-    ['p','b','e','t','w','e','p'],
-    ['a','r','t','e','n','r','o'],
-    ['i','d','a','l','m','i','s'],
-    ['l','r','a','w','t','e','d'],
-    ['e','a','d','h','i','r','g'],
-    ['i','n','h','a','d','r','o'],
-    ['a','g','i','r','w','o','u'],
-    ['f','b','l','o','r','k','p'],
-    ['f','o','w','s','u','e','m'],
-    ['l','r','d','w','p','d','e'],
-    ['e','e','e','k','p','o','s'],
-    ['g','a','l','r','t','s','y']
+    ['n','e','i','p','r','o','g'],
+    ['a','t','h','e','r','e','o'],
+    ['g','r','a','b','s','s','p'],
+    ['e','s','l','u','p','t','i'],
+    ['i','d','e','s','e','b','o'],
+    ['e','n','p','e','t','e','n'],
+    ['t','i','f','r','i','t','s'],
+    ['y','m','e','o','d','t','e'],
+    ['l','a','n','o','v','r','a'],
+    ['i','i','n','g','e','l','b'],
+    ['n','s','r','a','l','l','u'],
+    ['k','p','o','u','n','d','m']
 ]
 
 _end = '_end_'
@@ -172,6 +187,8 @@ def find_words_for_seed(seed):
     shapes = [seed]
     all_shapes = []
     for i in range(0, 7):
+        for shape in shapes:
+            shape.printShape()
         x = []
         for shape in shapes:
             new_shapes = shape.getExpandedShapes()
@@ -188,6 +205,10 @@ def find_words_for_seed(seed):
             valid_shapes.append(shape)
     return (valid_words, valid_shapes)
 
+print(find_words_for_seed((1, 6)))
+shape()
+exit()
+
 def getKey(square):
     return str(square[0]) + '-' + str(square[1])
 
@@ -196,18 +217,19 @@ for r in range(0, len(current_grid)):
     for c in range(0, len(current_grid[r])):
         square = (r, c)
         key = getKey(square)
-        if key not in square_mapping:
-            square_mapping[key] = []
+        square_mapping[key] = []
+
+for r in range(0, len(current_grid)):
+    for c in range(0, len(current_grid[r])):
+        square = (r, c)
+        key = getKey(square)
         x = find_words_for_seed(square)
         valid_words = x[0]
         valid_shapes = x[1]
         for shape in valid_shapes:
             for square in shape.squares:
                 key = getKey(square)
-                if key in square_mapping:
-                    square_mapping[key].append(shape)
-                else:
-                    square_mapping[key] = [shape]
+                square_mapping[key].append(shape)
 
 # Dedupe step (there's a way to do this higher in the stack but I can't think right now)
 for key in square_mapping:
@@ -223,10 +245,15 @@ for key in square_mapping:
 def unique_square(sm):
     for key in sm:
         if len(sm[key]) == 1:
+            print(key)
+            print(sm[key][0].squares)
             return sm[key][0]
     return None
 
 print("Built mapping")
+for key in square_mapping:
+    print(key)
+    print([x.getCurrentWord() for x in square_mapping[key]])
 
 solution = []
 while True:
@@ -267,4 +294,4 @@ printShapes(solution, current_grid)
 for pos in square_mapping:
     print(pos)
     for x in square_mapping[pos]:
-        x.printShape()
+        print(x.getCurrentWord())
