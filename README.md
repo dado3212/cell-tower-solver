@@ -8,5 +8,5 @@ Run tests with `python3 tests.py`
 Speedups gotten from profiling with `python3 -m cProfile -s time main.py`
 
 Current speeds:
-* 2.503 for #??
-* 3.833 for #86
+* 1.005 for #??
+* 1.411 for #86

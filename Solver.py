@@ -1,5 +1,5 @@
 from Shape import Shape
-from Words import words
+from Words import words, is_valid_word
 
 class Colors:
     HEADERS = '\033[95m'
@@ -77,7 +77,7 @@ class Solver:
         valid_shapes = []
         for shape in all_shapes:
             word = shape.getCurrentWord()
-            if word in words and shape not in valid_shapes:
+            if is_valid_word(word) and shape not in valid_shapes:
                 valid_shapes.append(shape)
         print(seed.squares)
         return valid_shapes
