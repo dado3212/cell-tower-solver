@@ -1,27 +1,7 @@
 from Shape import Shape
 from Words import words, is_valid_word
-
-class Colors:
-    HEADERS = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-colors = [
-    Colors.BOLD,
-    Colors.UNDERLINE,
-    Colors.HEADERS,
-    Colors.OKBLUE,
-    Colors.OKCYAN,
-    Colors.OKGREEN,
-    Colors.WARNING,
-    Colors.FAIL
-]
+from Colors import nthSunflowerColor, printColor
+import random
 
 def getKey(square):
     return str(square[0]) + '-' + str(square[1])
@@ -79,7 +59,6 @@ class Solver:
             word = shape.getCurrentWord()
             if is_valid_word(word) and shape not in valid_shapes:
                 valid_shapes.append(shape)
-        print(seed.squares)
         return valid_shapes
 
     def solveGrid(this):
@@ -108,10 +87,11 @@ class Solver:
                     unique.append(shape)
             square_mapping[key] = unique
 
-        print("Built mapping")
-        for key in square_mapping:
-            print(key)
-            print([x.getCurrentWord() for x in square_mapping[key]])
+        # For debugging
+        # print("Built mapping")
+        # for key in square_mapping:
+        #     print(key)
+        #     print([x.getCurrentWord() for x in square_mapping[key]])
 
         solution = []
         while True:
@@ -135,17 +115,17 @@ class Solver:
         if this.solution is None:
             print("No solution found.")
         else:
-            i = 0
+            i = 1
             for shape in this.solution:
-                shape.setColor(colors[i])
-                i = (i+1) % len(colors)
+                shape.setColor(nthSunflowerColor(i))
+                i += 6
             for r in range(0, len(this.grid)):
                 row = ""
                 for c in range(0, len(this.grid[r])):
                     found_cell = False
                     for shape in this.solution:
                         if (r, c) in shape.squares:
-                            row += shape.getColor() + this.grid[r][c] + Colors.ENDC
+                            row += printColor(shape.getColor(), this.grid[r][c])
                             found_cell = True
                             break
                     if not found_cell:
