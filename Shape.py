@@ -85,7 +85,7 @@ class Shape:
             output += row + "\n"
         return output
 
-    def setColor(this, color: Color):
+    def setColor(this, color: Color) -> None:
         this.color = color
 
     def getColor(this) -> Color:

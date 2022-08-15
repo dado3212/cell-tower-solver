@@ -17,7 +17,7 @@ def unique_square(sm: Dict[str, List[Shape]]) -> Optional[Shape]:
             return sm[key][0]
     return None
 
-def remove_shape_from_map(sm: Dict[str, List[Shape]], shape_to_remove: Shape):
+def remove_shape_from_map(sm: Dict[str, List[Shape]], shape_to_remove: Shape) -> None:
     for square_to_clear in shape_to_remove.squares:
         key_to_filter = getKey(square_to_clear)
         sm[key_to_filter] = [x for x in sm[key_to_filter] if x != shape_to_remove]
@@ -75,7 +75,7 @@ class Solver:
                 valid_shapes.append(shape)
         return valid_shapes
 
-    def solveGrid(this):
+    def solveGrid(this) -> None:
         square_mapping: Dict[str, List[Shape]] = {}
         for r in range(0, this.grid.height):
             for c in range(0, this.grid.width):
@@ -125,7 +125,7 @@ class Solver:
                 square_mapping = reduced_map(square_mapping, unique)
         this.solution = solution
 
-    def printSolution(this):
+    def printSolution(this) -> None:
         if this.solution is None:
             print("No solution found.")
         else:

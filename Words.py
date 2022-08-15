@@ -12,16 +12,6 @@ def make_trie(words: List[str]) -> Dict[str, Any]:
         current_dict[_end] = _end
     return root
 
-# download valid wordlist used by the site
-# https://www.andrewt.net/puzzles/cell-tower/assets/words.json
-with open('words.json') as f:
-    words: List[str] = json.load(f)
-    max_length = max([len(x) for x in words]) # 8
-    min_length = min([len(x) for x in words]) # 4
-
-    # convert this to a trie for quick lookups
-    trie = make_trie(words)
-
 def is_valid_word(word: str) -> bool:
     current_dict = trie
     for letter in word:
@@ -43,3 +33,13 @@ def chunk_matches_word(word: str, chunks: List[str]) -> bool:
             break
         last_index = i + len(chunk)
     return is_valid
+
+# download valid wordlist used by the site
+# https://www.andrewt.net/puzzles/cell-tower/assets/words.json
+with open('words.json') as f:
+    words: List[str] = json.load(f)
+    max_length = max([len(x) for x in words]) # 8
+    min_length = min([len(x) for x in words]) # 4
+
+    # convert this to a trie for quick lookups
+    trie = make_trie(words)
