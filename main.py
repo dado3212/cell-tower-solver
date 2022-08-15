@@ -1,4 +1,5 @@
 from Solver import Solver
+from Grid import Grid
 
 # ??
 current_grid = [
@@ -65,7 +66,7 @@ current_grid = [
 ]
 
 # 102
-current_grid = [
+current_grid = Grid([
     ['r','e','d','w','o','r','d'],
     ['u','v','c','i','e','f','d'],
     ['n','i','g','a','r','a','m'],
@@ -78,7 +79,7 @@ current_grid = [
     ['d','p','e','d','r','t','v'],
     ['w','o','m','n','o','a','l'],
     ['a','n','t','e','u','e','s']
-]
+])
 
 solver = Solver(current_grid)
 solver.solveGrid()

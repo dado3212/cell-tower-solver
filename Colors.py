@@ -1,3 +1,7 @@
+from typing import Tuple
+
+Color = Tuple[int, int, int]
+
 # Adapted from https://github.com/python/cpython/blob/3.10/Lib/colorsys.py
 # and https://www.andrewt.net/puzzles/cell-tower/common/colours.js
 PHI = (5 ** 0.5 + 1) * 0.5
@@ -15,7 +19,7 @@ def _v(m1, m2, hue):
         return m1 + (m2-m1)*(TWO_THIRD-hue)*6.0
     return m1
 
-def nthSunflowerColor(n):
+def nthSunflowerColor(n) -> Color:
     l = 0.5
     s = 0.8
     h = ((PHI * n) % 1)
@@ -29,7 +33,7 @@ def nthSunflowerColor(n):
     return (int(_v(m1, m2, h+ONE_THIRD)*256), int(_v(m1, m2, h) * 256), int(_v(m1, m2, h-ONE_THIRD) * 256), is_dark)
 
 
-def printColor(color, text):
+def printColor(color: Color, text: str) -> str:
     r = color[0]
     g = color[1]
     b = color[2]
