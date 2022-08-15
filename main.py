@@ -1,4 +1,4 @@
-from Solver import Solver
+from Solver import solve
 from Grid import Grid
 
 # ??
@@ -50,7 +50,7 @@ current_grid = [
 ]
 
 # 1
-current_grid = [
+old_grid = Grid([
     ['r','e','d','o','g','a','a'],
     ['a','d','w','s','o','n','o'],
     ['h','e','n','l','i','t','h'],
@@ -63,7 +63,7 @@ current_grid = [
     ['w','f','e','t','u','a','y'],
     ['u','l','p','r','a','h','e'],
     ['a','i','d','l','l','l','o']
-]
+])
 
 # 102
 current_grid = Grid([
@@ -81,6 +81,7 @@ current_grid = Grid([
     ['a','n','t','e','u','e','s']
 ])
 
-solver = Solver(current_grid)
-solver.solveGrid()
-solver.printSolution()
+solution = solve(current_grid)
+current_grid.printShapes(solution)
+print()
+old_grid.printShapes(solution)

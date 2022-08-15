@@ -86,87 +86,73 @@ def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
     shape.potential_words = filtered_potential_words
     return len(filtered_potential_words) > 0
 
-class Solver:
-    def __init__(this, grid: Grid):
-        this.grid = grid
-        this.solution: Optional[List[Shape]] = None
+def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
+    start = grid.getCharacter(seed[0], seed[1])
+    xword = [x for x in words if x[0] == start]
+    seed = Shape(xword, [seed])
+    shapes = [seed]
+    all_shapes = []
+    for i in range(0, 7):
+        x = []
+        for shape in shapes:
+            new_shapes = getExpandedShapes(grid, shape)
+            x = x + new_shapes
+        shapes = x
+        if (i >= 2):
+            all_shapes += x
+    valid_shapes = []
+    for shape in all_shapes:
+        word = grid.getWord(shape)
+        if is_valid_word(word) and shape not in valid_shapes:
+            valid_shapes.append(shape)
+    return valid_shapes
 
-    def find_words_for_seed(this, seed: Square) -> List[Shape]:
-        start = this.grid.getCharacter(seed[0], seed[1])
-        xword = [x for x in words if x[0] == start]
-        seed = Shape(xword, [seed])
-        shapes = [seed]
-        all_shapes = []
-        for i in range(0, 7):
-            x = []
-            for shape in shapes:
-                new_shapes = getExpandedShapes(this.grid, shape)
-                x = x + new_shapes
-            shapes = x
-            if (i >= 2):
-                all_shapes += x
-        valid_shapes = []
-        for shape in all_shapes:
-            word = this.grid.getWord(shape)
-            if is_valid_word(word) and shape not in valid_shapes:
-                valid_shapes.append(shape)
-        return valid_shapes
+def solve(grid: Grid) -> List[Shape]:
+    square_mapping: Dict[str, List[Shape]] = {}
+    for r in range(0, grid.height):
+        for c in range(0, grid.width):
+            square = (r, c)
+            key = getKey(square)
+            square_mapping[key] = []
 
-    def solveGrid(this) -> None:
-        square_mapping: Dict[str, List[Shape]] = {}
-        for r in range(0, this.grid.height):
-            for c in range(0, this.grid.width):
-                square = (r, c)
-                key = getKey(square)
-                square_mapping[key] = []
+    for r in range(0, grid.height):
+        for c in range(0, grid.width):
+            square = (r, c)
+            key = getKey(square)
+            valid_shapes = find_words_for_seed(grid, square)
+            for shape in valid_shapes:
+                for square in shape.squares:
+                    key = getKey(square)
+                    square_mapping[key].append(shape)
 
-        for r in range(0, this.grid.height):
-            for c in range(0, this.grid.width):
-                square = (r, c)
-                key = getKey(square)
-                valid_shapes = this.find_words_for_seed(square)
-                for shape in valid_shapes:
-                    for square in shape.squares:
-                        key = getKey(square)
-                        square_mapping[key].append(shape)
+    # Dedupe step (there's a way to do this higher in the stack but I can't think right now)
+    for key in square_mapping:
+        unique = []
+        for shape in square_mapping[key]:
+            if shape not in unique:
+                unique.append(shape)
+        square_mapping[key] = unique
 
-        # Dedupe step (there's a way to do this higher in the stack but I can't think right now)
-        for key in square_mapping:
-            unique = []
-            for shape in square_mapping[key]:
-                if shape not in unique:
-                    unique.append(shape)
-            square_mapping[key] = unique
+    # For debugging
+    # print("Built mapping")
+    # for key in square_mapping:
+    #     print(key)
+    #     print([x.getCurrentWord() for x in square_mapping[key]])
 
-        # For debugging
-        # print("Built mapping")
-        # for key in square_mapping:
-        #     print(key)
-        #     print([x.getCurrentWord() for x in square_mapping[key]])
-
-        solution = []
-        while True:
-            unique = unique_square(square_mapping)
-            if unique is None:
-                # Try and find a word
-                removed_something = False
-                for key in square_mapping:
-                    for shape in square_mapping[key]:
-                        if not has_solution(reduced_map(square_mapping, shape)):
-                            remove_shape_from_map(square_mapping, shape)
-                            removed_something = True
-                if not removed_something:
-                    break
-            else:
-                solution.append(unique)
-                square_mapping = reduced_map(square_mapping, unique)
-        this.solution = solution
-
-    def printSolution(this) -> None:
-        if this.solution is None:
-            print("No solution found.")
+    solution = []
+    while True:
+        unique = unique_square(square_mapping)
+        if unique is None:
+            # Try and find a word
+            removed_something = False
+            for key in square_mapping:
+                for shape in square_mapping[key]:
+                    if not has_solution(reduced_map(square_mapping, shape)):
+                        remove_shape_from_map(square_mapping, shape)
+                        removed_something = True
+            if not removed_something:
+                break
         else:
-            for shape in this.solution:
-                print(shape)
-                print()
-            this.grid.printShapes(this.solution)
+            solution.append(unique)
+            square_mapping = reduced_map(square_mapping, unique)
+    return solution
