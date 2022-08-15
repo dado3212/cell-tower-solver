@@ -1,7 +1,7 @@
-from Shape import Shape, Square
-from Words import words, is_valid_word
-from Colors import nthSunflowerColor, printColor
+from Shape import Shape
+from Words import words, max_length, is_valid_word, chunk_matches_word
 import random
+from Types import Square
 from Grid import Grid
 from typing import List, Dict, Optional
 
@@ -38,39 +38,76 @@ def has_solution(sm: Dict[str, List[Shape]]) -> bool:
             return False
     return True
 
-def getExpandedShapes(shape: Shape) -> List[Shape]:
-    cells = shape.getExpansionCells()
+def getExpansionCells(grid: Grid, shape: Shape) -> List[Square]:
+    basic_squares = []
+    for square in shape.squares:
+        up = (square[0] - 1, square[1])
+        right = (square[0], square[1] + 1)
+        down = (square[0] + 1, square[1])
+        left = (square[0], square[1] - 1)
+        for possible in [up, right, down, left]:
+            if (possible not in basic_squares and grid.squareIsValid(possible) and shape.cellIsClaimable(possible)):
+                basic_squares.append(possible)
+    # We should check some word validity here to prune bad options
+    return basic_squares
+
+def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
+    cells = getExpansionCells(grid, shape)
     shapes = []
     for cell in cells:
         squares = [x for x in shape.squares]
         squares.append(cell)
         squares.sort()
-        new_shape = Shape(shape.grid, shape.potential_words, squares)
-        if new_shape.couldExpandToWord():
+        new_shape = Shape(shape.potential_words, squares)
+        if couldExpandToWord(grid, new_shape):
             shapes.append(new_shape)
     return shapes
+
+def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
+    if len(shape.squares) == max_length:
+        return is_valid_word(grid.getWord(shape))
+    continuous_chunks: List[str] = []
+    last_square = None
+    for square in shape.squares:
+        # Start it off
+        if last_square is None:
+            chunk = grid.getCharacter(square[0], square[1])
+        elif last_square[0] == square[0] and last_square[1] + 1 == square[1]:
+            chunk += grid.getCharacter(square[0], square[1])
+        else:
+            continuous_chunks.append(chunk)
+            chunk = grid.getCharacter(square[0], square[1])
+        last_square = square
+    continuous_chunks.append(chunk)
+    filtered_potential_words = []
+    for word in shape.potential_words:
+        if chunk_matches_word(word, continuous_chunks):
+            filtered_potential_words.append(word)
+    shape.potential_words = filtered_potential_words
+    return len(filtered_potential_words) > 0
 
 class Solver:
     def __init__(this, grid: Grid):
         this.grid = grid
+        this.solution: Optional[List[Shape]] = None
 
     def find_words_for_seed(this, seed: Square) -> List[Shape]:
         start = this.grid.getCharacter(seed[0], seed[1])
         xword = [x for x in words if x[0] == start]
-        seed = Shape(this.grid, xword, [seed])
+        seed = Shape(xword, [seed])
         shapes = [seed]
         all_shapes = []
         for i in range(0, 7):
             x = []
             for shape in shapes:
-                new_shapes = getExpandedShapes(shape)
+                new_shapes = getExpandedShapes(this.grid, shape)
                 x = x + new_shapes
             shapes = x
             if (i >= 2):
                 all_shapes += x
         valid_shapes = []
         for shape in all_shapes:
-            word = shape.getCurrentWord()
+            word = this.grid.getWord(shape)
             if is_valid_word(word) and shape not in valid_shapes:
                 valid_shapes.append(shape)
         return valid_shapes
@@ -129,22 +166,7 @@ class Solver:
         if this.solution is None:
             print("No solution found.")
         else:
-            i = 1
-            print(this.solution)
             for shape in this.solution:
-                shape.setColor(nthSunflowerColor(i))
                 print(shape)
                 print()
-                i += 6
-            for r in range(0, this.grid.height):
-                row = ""
-                for c in range(0, this.grid.width):
-                    found_cell = False
-                    for shape in this.solution:
-                        if (r, c) in shape.squares:
-                            row += printColor(shape.getColor(), this.grid.getCharacter(r, c))
-                            found_cell = True
-                            break
-                    if not found_cell:
-                        row += ' _ '
-                print(row)
+            this.grid.printShapes(this.solution)
