@@ -56,8 +56,28 @@ class Shape:
         return len(this.squares)
 
     def numSides(this) -> int:
-        # TODO: Implement this
-        return 0
+        num_sides = 0
+        for square in this.squares:
+            num = 0
+            # Above
+            if (square[0] - 1, square[1]) not in this.squares:
+                if (square[0], square[1] - 1) not in this.squares or (square[0] - 1, square[1] - 1) in this.squares:
+                    num += 1
+            # Below
+            if (square[0] + 1, square[1]) not in this.squares:
+                if (square[0], square[1] - 1) not in this.squares or (square[0] + 1, square[1] - 1) in this.squares:
+                    num += 1
+            # Right
+            if (square[0], square[1] + 1) not in this.squares:
+                if (square[0] - 1, square[1]) not in this.squares or (square[0] - 1, square[1] + 1) in this.squares:
+                    num += 1
+            # Left
+            if (square[0], square[1] - 1) not in this.squares:
+                if (square[0] - 1, square[1]) not in this.squares or (square[0] - 1, square[1] - 1) in this.squares:
+                    num += 1
+
+            num_sides += num
+        return num_sides
 
     def maxRow(this) -> int:
         if (this.max_row == None):
