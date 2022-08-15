@@ -54,7 +54,6 @@ def getPossibleWords(shapes: List[Shape]) -> List[str]:
 
 def build(shapes: List[Shape]) -> Grid:
     # For now, just assume the list of shapes is well formed
-
     num_wordlists = 3
     for i in range(num_wordlists):
         words = getPossibleWords(shapes)

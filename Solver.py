@@ -132,12 +132,6 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
                 unique.append(shape)
         square_mapping[key] = unique
 
-    # For debugging
-    # print("Built mapping")
-    # for key in square_mapping:
-    #     print(key)
-    #     print([x.getCurrentWord() for x in square_mapping[key]])
-
     solution = []
     while True:
         unique = unique_square(square_mapping)

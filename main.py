@@ -35,7 +35,7 @@ current_grid = [
 ]
 
 # 87
-current_grid = [
+old_grid = Grid([
     ['d','i','w','a','t','b','a'],
     ['g','i','t','r','r','n','k'],
     ['n','u','n','s','a','p','t'],
@@ -48,22 +48,6 @@ current_grid = [
     ['t','e','c','o','i','k','s'],
     ['c','t','n','g','h','i','n'],
     ['s','f','u','s','e','d','g']
-]
-
-# 1
-old_grid = Grid([
-    ['r','e','d','o','g','a','a'],
-    ['a','d','w','s','o','n','o'],
-    ['h','e','n','l','i','t','h'],
-    ['l','p','m','n','i','n','e'],
-    ['b','a','i','e','s','e','r'],
-    ['a','r','n','b','r','t','a'],
-    ['p','e','u','u','s','c','c'],
-    ['n','c','t','r','y','o','r'],
-    ['a','u','r','n','a','d','s'],
-    ['w','f','e','t','u','a','y'],
-    ['u','l','p','r','a','h','e'],
-    ['a','i','d','l','l','l','o']
 ])
 
 # 102
@@ -82,8 +66,8 @@ current_grid = Grid([
     ['a','n','t','e','u','e','s']
 ])
 
-solution = solve(current_grid)
-current_grid.printShapes(solution)
+solution = solve(old_grid)
+old_grid.printShapes(solution)
 randomized_grid = build(solution)
 print()
 solution2 = solve(randomized_grid)
