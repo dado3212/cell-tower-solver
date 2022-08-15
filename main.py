@@ -1,5 +1,6 @@
 from Solver import solve
 from Grid import Grid
+from Builder import build, buildGrid
 
 # ??
 current_grid = [
@@ -83,5 +84,7 @@ current_grid = Grid([
 
 solution = solve(current_grid)
 current_grid.printShapes(solution)
+randomized_grid = build(solution)
 print()
-old_grid.printShapes(solution)
+solution2 = solve(randomized_grid)
+randomized_grid.printShapes(solution2)

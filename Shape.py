@@ -3,26 +3,16 @@ from typing import List
 from Colors import printColor
 
 class Shape:
-    def __eq__(self, other):
-        return self.squares == other.squares
-
     # Squares is a list of points in lexical order
     def __init__(this, potential_words: List[str], squares: List[Square]):
         this.potential_words = potential_words
         this.squares = squares
+        # Do this non-optimistically
+        this.max_col = None
+        this.max_row = None
 
-    # static
-    def cellIsClaimable(this, square: Square) -> bool:
-        # Can't be above the start square
-        if (square[0] < this.squares[0][0]):
-            return False
-        # Can't be to the left of the start square if it's the same row
-        if (square[0] == this.squares[0][0] and square[1] < this.squares[0][1]):
-            return False
-        # Can't already be part of the shape
-        if (square in this.squares):
-            return False
-        return True
+    def __eq__(self, other):
+        return self.squares == other.squares
 
     def __str__(this) -> str:
         output = ""
@@ -40,8 +30,37 @@ class Shape:
             output += row + "\n"
         return output
 
+    def __hash__(this) -> str:
+        return hash(','.join([f'{square[0]}-{square[1]}' for square in this.squares]))
+
+    # static
+    def cellIsClaimable(this, square: Square) -> bool:
+        # Can't be above the start square
+        if (square[0] < this.squares[0][0]):
+            return False
+        # Can't be to the left of the start square if it's the same row
+        if (square[0] == this.squares[0][0] and square[1] < this.squares[0][1]):
+            return False
+        # Can't already be part of the shape
+        if (square in this.squares):
+            return False
+        return True
+
     def setColor(this, color: Color) -> None:
         this.color = color
 
     def getColor(this) -> Color:
         return this.color
+
+    def size(this) -> int:
+        return len(this.squares)
+
+    def maxRow(this) -> int:
+        if (this.max_row == None):
+            this.max_row = max([square[0] for square in this.squares])
+        return this.max_row
+
+    def maxCol(this) -> int:
+        if (this.max_col == None):
+            this.max_col = max([square[1] for square in this.squares])
+        return this.max_col

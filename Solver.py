@@ -1,6 +1,5 @@
 from Shape import Shape
-from Words import words, max_length, is_valid_word, chunk_matches_word
-import random
+from Words import global_word_list, max_length, is_valid_word, chunk_matches_word
 from Types import Square
 from Grid import Grid
 from typing import List, Dict, Optional
@@ -88,7 +87,7 @@ def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
 
 def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
     start = grid.getCharacter(seed[0], seed[1])
-    xword = [x for x in words if x[0] == start]
+    xword = [x for x in global_word_list if x[0] == start]
     seed = Shape(xword, [seed])
     shapes = [seed]
     all_shapes = []
@@ -107,7 +106,7 @@ def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
             valid_shapes.append(shape)
     return valid_shapes
 
-def solve(grid: Grid) -> List[Shape]:
+def solve(grid: Grid) -> Optional[List[Shape]]:
     square_mapping: Dict[str, List[Shape]] = {}
     for r in range(0, grid.height):
         for c in range(0, grid.width):
@@ -155,4 +154,8 @@ def solve(grid: Grid) -> List[Shape]:
         else:
             solution.append(unique)
             square_mapping = reduced_map(square_mapping, unique)
-    return solution
+    if len(square_mapping) == 0:
+        return solution
+    else:
+        # Failed to find a solution
+        return None

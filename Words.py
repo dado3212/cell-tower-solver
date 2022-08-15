@@ -37,9 +37,9 @@ def chunk_matches_word(word: str, chunks: List[str]) -> bool:
 # download valid wordlist used by the site
 # https://www.andrewt.net/puzzles/cell-tower/assets/words.json
 with open('words.json') as f:
-    words: List[str] = json.load(f)
-    max_length = max([len(x) for x in words]) # 8
-    min_length = min([len(x) for x in words]) # 4
+    global_word_list: List[str] = json.load(f)
+    max_length = max([len(x) for x in global_word_list]) # 8
+    min_length = min([len(x) for x in global_word_list]) # 4
 
     # convert this to a trie for quick lookups
-    trie = make_trie(words)
+    trie = make_trie(global_word_list)
