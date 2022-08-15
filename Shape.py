@@ -55,6 +55,10 @@ class Shape:
     def size(this) -> int:
         return len(this.squares)
 
+    def numSides(this) -> int:
+        # TODO: Implement this
+        return 0
+
     def maxRow(this) -> int:
         if (this.max_row == None):
             this.max_row = max([square[0] for square in this.squares])
