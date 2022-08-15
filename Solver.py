@@ -129,5 +129,5 @@ class Solver:
                             found_cell = True
                             break
                     if not found_cell:
-                        row += '_'
+                        row += ' _ '
                 print(row)
