@@ -22,6 +22,13 @@ class Grid:
     def squareIsValid(this, square: Square) -> bool:
         return (square[0] >= 0 and square[0] < this.height and square[1] >= 0 and square[1] < this.width)
 
+    def printBlank(this) -> None:
+        for r in range(0, this.height):
+            row = ""
+            for c in range(0, this.width):
+                row += ' ' + this.getCharacter(r, c).upper() + ' '
+            print(row)
+
     def printShapes(this, shapes: List[Shape]) -> None:
         i = 1
         for shape in shapes:

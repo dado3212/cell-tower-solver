@@ -6,34 +6,27 @@ from Solver import solve
 from Words import global_word_list
 from Types import Square
 
-def temp_print(mapped_squares):
-    non_deduped_shapes = mapped_squares.values()
-    shapes: List[Shape] = []
-    for s in non_deduped_shapes:
-        if s not in shapes:
-            shapes.append(s)
-
-    empty_grid = Grid([
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' '],
-        [' ',' ',' ',' ',' ',' ',' ']
-    ])
-
-    empty_grid.printShapes(shapes)
-    print("")
-
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
+    shapes: List[Shape] = []
+    is_valid = False
+    while not is_valid:
+        shapes = buildShapePatternHelper(width, height, minSize, maxSize)
+        is_valid = True
+        for x in shapes:
+            if x.size() < minSize or x.size() > maxSize:
+                print("Wrong sizing")
+                is_valid = False
+        if is_valid:
+            grid = build(shapes)
+            if grid is None:
+                print("No grid")
+                is_valid = False
+
+    return shapes
+
+def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
     unfilled_squares: Dict[Square, bool] = dict()
     mapped_squares: Dict[Square, Shape] = dict()
     for r in range(height):
@@ -49,8 +42,6 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
         # pick a random square
         random_square = random.sample(unfilled_squares.keys(), 1)[0]
         del unfilled_squares[random_square]
-
-        print(random_square)
 
         # find an adjacent cell that is in bounds
         up = (random_square[0] - 1, random_square[1])
@@ -169,18 +160,19 @@ def getPossibleWords(shapes: List[Shape]) -> List[str]:
 # Takes in a pattern of shapes and tries to build a working grid
 # There's a more elegant way to do random building, but this currently
 # tends to work pretty well.
-def build(shapes: List[Shape]) -> Optional[Grid]:
+def build(shapes: List[Shape], debug: bool = False) -> Optional[Grid]:
     # For now, just assume the list of shapes is well formed
     num_wordlists = 3
     for i in range(num_wordlists):
         words = getPossibleWords(shapes)
-        print("Trying to build grid with words", words)
+        if debug:
+            print("Trying to build grid with words", words)
         mapping: Dict[str, List[Shape]] = dict()
         for word in words:
             mapping[word] = [shape for shape in shapes if len(word) == shape.size()]
 
         # The number of attempts with a given wordlist before we should just regenerate
-        num_attempts = 10
+        num_attempts = 5
         for i in range(num_attempts):
             new_mapping: Dict[Shape, str] = dict()
             for word in mapping:
@@ -190,7 +182,8 @@ def build(shapes: List[Shape]) -> Optional[Grid]:
             grid = buildGrid(new_mapping)
             solution = solve(grid)
             if (solution == None):
-                print("Retrying")
+                if debug:
+                    print("Retrying")
             else:
                 return grid
 
