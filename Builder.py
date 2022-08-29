@@ -1,14 +1,109 @@
 from Shape import Shape
 from typing import List, Dict, Optional
-import random
+import random, math
 from Grid import Grid
 from Solver import solve
 from Words import global_word_list
+from Types import Square
+
+def temp_print(mapped_squares):
+    non_deduped_shapes = mapped_squares.values()
+    shapes: List[Shape] = []
+    for s in non_deduped_shapes:
+        if s not in shapes:
+            shapes.append(s)
+
+    empty_grid = Grid([
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ']
+    ])
+
+    empty_grid.printShapes(shapes)
+    print("")
 
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
-    return []
+    unfilled_squares: Dict[Square, bool] = dict()
+    mapped_squares: Dict[Square, Shape] = dict()
+    for r in range(height):
+        for c in range(width):
+            square = (r, c)
+            unfilled_squares[square] = False
+
+    min_colors = math.ceil(width * height / maxSize)
+    max_colors = math.floor(width * height / minSize)
+    starting_color_count = random.randint(min_colors, max_colors)
+
+    while (len(unfilled_squares) > 0):
+        # pick a random square
+        random_square = random.sample(unfilled_squares.keys(), 1)[0]
+        del unfilled_squares[random_square]
+
+        print(random_square)
+
+        # find an adjacent cell that is in bounds
+        up = (random_square[0] - 1, random_square[1])
+        right = (random_square[0], random_square[1] + 1)
+        down = (random_square[0] + 1, random_square[1])
+        left = (random_square[0], random_square[1] - 1)
+
+        # too small
+        too_small: List[Square] = []
+        options: List[Square] = []
+        for possible in [up, right, down, left]:
+            # it must be in one of them
+            if possible not in unfilled_squares and possible not in mapped_squares:
+                continue
+
+            if possible in mapped_squares and mapped_squares[possible].size() < minSize:
+                too_small.append(possible)
+
+            options.append(possible)
+
+        # pick from the options
+        # if one of the adjacent is length less than the min, then we add it
+        if len(too_small) > 0:
+            to_join = random.sample(too_small, 1)[0]
+        else:
+            to_join = random.sample(options, 1)[0]
+
+        if to_join in unfilled_squares:
+            del unfilled_squares[to_join]
+            new_shape_squares = [to_join, random_square]
+            new_shape_squares.sort()
+            new_shape = Shape([], new_shape_squares)
+            mapped_squares[to_join] = new_shape
+            mapped_squares[random_square] = new_shape
+        else:
+            shape = mapped_squares[to_join]
+            squares = shape.squares
+            squares.append(random_square)
+            squares.sort()
+            shape.squares = squares
+            mapped_squares[random_square] = shape
+
+        # TEMPORARILY print it out
+        # temp_print(mapped_squares)
+        # join it with a random adjacent cell
+
+    non_deduped_shapes = mapped_squares.values()
+    shapes: List[Shape] = []
+    for s in non_deduped_shapes:
+        if s not in shapes:
+            shapes.append(s)
+
+    return shapes
 
 # There is a notion of how good a tiled pattern is. My general heuristic is that
 # larger chunks are better, and more curvy chunks are better.

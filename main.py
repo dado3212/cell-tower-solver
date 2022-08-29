@@ -1,6 +1,6 @@
 from Solver import solve
 from Grid import Grid
-from Builder import build, buildGrid, shapeEccentricity
+from Builder import build, buildGrid, shapeEccentricity, buildShapePattern
 
 # ??
 current_grid = [
@@ -66,15 +66,34 @@ current_grid = Grid([
     ['a','n','t','e','u','e','s']
 ])
 
-solution_old = solve(old_grid)
-old_grid.printShapes(solution_old)
-randomized_grid = build(solution_old)
-print(shapeEccentricity(solution_old))
-print()
-solution2 = solve(randomized_grid)
-randomized_grid.printShapes(solution2)
-print(shapeEccentricity(solution2))
+empty_grid = Grid([
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' '],
+    [' ',' ',' ',' ',' ',' ',' ']
+])
 
-solution_current = solve(current_grid)
-current_grid.printShapes(solution_current)
-print(shapeEccentricity(solution_current))
+pattern = buildShapePattern(7, 12, 4, 8)
+empty_grid.printShapes(pattern)
+# solution_old = solve(old_grid)
+# old_grid.printShapes(solution_old)
+# randomized_grid = build(solution_old)
+# print(shapeEccentricity(solution_old))
+# print()
+# solution2 = solve(randomized_grid)
+# randomized_grid.printShapes(solution2)
+# print(shapeEccentricity(solution2))
+
+# solution_current = solve(current_grid)
+# current_grid.printShapes(solution_current)
+# print(shapeEccentricity(solution_current))
+
+# empty_grid.printShapes(solution_old)
