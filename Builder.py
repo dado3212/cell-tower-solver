@@ -5,6 +5,7 @@ from Grid import Grid
 from Solver import solve
 from Words import global_word_list
 from Types import Square
+from Utils import squareIsValid, temp_print
 
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
@@ -19,10 +20,63 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
                 print("Wrong sizing")
                 is_valid = False
         if is_valid:
-            grid = build(shapes)
+            temp_print(shapes)
+            grid = build(shapes, True)
             if grid is None:
                 print("No grid")
                 is_valid = False
+
+    return shapes
+
+def altExpansionCells(shape: Shape, width: int, height: int) -> List[Square]:
+    basic_squares = []
+    for square in shape.squares:
+        up = (square[0] - 1, square[1])
+        right = (square[0], square[1] + 1)
+        down = (square[0] + 1, square[1])
+        left = (square[0], square[1] - 1)
+        for possible in [up, right, down, left]:
+            if (possible not in basic_squares and squareIsValid(possible, width, height) and possible not in shape.squares):
+                basic_squares.append(possible)
+    # We should check some word validity here to prune bad options
+    return basic_squares
+
+# Do some fixing. Really we should just build
+# these correctly, but this is easier to wrap
+# my head around. Don't expect this code to be
+# long for this world
+def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
+    # Get the number of shapes that are too small
+    need_adjustment = [s for s in shapes if s.size() < minSize] # or s.size() > maxSize]
+
+    # Check for the trivial case where we're good
+    if len(need_adjustment) == 0:
+        return shapes
+
+    temp_print(need_adjustment, width, height)
+
+    # Solve the first one, do this recursively
+    to_fix = need_adjustment[0]
+    temp_print([to_fix], width, height)
+
+    adjacent_squares = altExpansionCells(to_fix, width, height)
+
+    x = [Shape([], [x]) for x in adjacent_squares]
+    x.append(to_fix)
+    temp_print(x, width, height)
+    exit()
+
+    for adjacent_square in adjacent_squares:
+        shape = [s for s in shapes if adjacent_square in s.squares][0]
+        if shape.size() + to_fix.size() >= minSize and shape.size() + to_fix.size() <= maxSize:
+            new_squares = shape.squares + to_fix.squares
+            new_squares.sort()
+            new_shape = Shape([], new_squares)
+            new_shapes = [new_shape]
+            for s in shapes:
+                if s != to_fix and s != shape:
+                    new_shapes.append(s)
+            return fix_pass(new_shapes, width, height, minSize, maxSize)
 
     return shapes
 
@@ -94,7 +148,9 @@ def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int)
         if s not in shapes:
             shapes.append(s)
 
-    return shapes
+    temp_print(shapes, width, height)
+
+    return fix_pass(shapes, width, height, minSize, maxSize)
 
 # There is a notion of how good a tiled pattern is. My general heuristic is that
 # larger chunks are better, and more curvy chunks are better.

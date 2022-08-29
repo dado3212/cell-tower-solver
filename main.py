@@ -82,21 +82,21 @@ empty_grid = Grid([
 ])
 
 # Normal pattern
-pattern = buildShapePattern(7, 12, 4, 8)
-grid = build(pattern)
-grid.printBlank()
-print()
-grid.printShapes(pattern)
-
-print()
-print()
-
-# Larger pattern
-# pattern = buildShapePattern(25, 25, 5, 8)
+# pattern = buildShapePattern(7, 12, 4, 8)
 # grid = build(pattern)
 # grid.printBlank()
 # print()
 # grid.printShapes(pattern)
+
+# print()
+# print()
+
+# Larger pattern
+pattern = buildShapePattern(25, 25, 5, 8)
+grid = build(pattern)
+grid.printBlank()
+print()
+grid.printShapes(pattern)
 
 # solution_old = solve(old_grid)
 # old_grid.printShapes(solution_old)

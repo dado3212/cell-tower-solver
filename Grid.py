@@ -19,9 +19,6 @@ class Grid:
             word += this.getCharacter(square[0], square[1])
         return word
 
-    def squareIsValid(this, square: Square) -> bool:
-        return (square[0] >= 0 and square[0] < this.height and square[1] >= 0 and square[1] < this.width)
-
     def printBlank(this) -> None:
         for r in range(0, this.height):
             row = ""
