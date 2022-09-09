@@ -61,10 +61,10 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
 
     adjacent_squares = altExpansionCells(to_fix, width, height)
 
-    x = [Shape([], [x]) for x in adjacent_squares]
-    x.append(to_fix)
-    temp_print(x, width, height)
-    exit()
+    # x = [Shape([], [x]) for x in adjacent_squares]
+    # x.append(to_fix)
+    # temp_print(x, width, height)
+    # exit()
 
     for adjacent_square in adjacent_squares:
         shape = [s for s in shapes if adjacent_square in s.squares][0]
@@ -76,8 +76,13 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
             for s in shapes:
                 if s != to_fix and s != shape:
                     new_shapes.append(s)
+            temp_print(new_shapes, width, height)
+            # exit()
             return fix_pass(new_shapes, width, height, minSize, maxSize)
 
+    temp_print(shapes, width, height)
+    print("WHOA")
+    exit()
     return shapes
 
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
