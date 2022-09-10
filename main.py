@@ -100,32 +100,31 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # pattern_grid.printBlank()
 # exit()
 
-pattern_grid = triangleGrid(16, 16)
-print(len(pattern_grid.squares))
-characters = []
-for i in range(len(pattern_grid.squares)):
-    characters.append('-')
-pattern_grid.setCharacters(characters)
-pattern_grid.printBlank()
-pattern = buildShapePattern(pattern_grid)
-grid = build(pattern)
-print()
-grid.printShapes(pattern)
-exit()
+# pattern_grid = triangleGrid(16, 16)
+# print(len(pattern_grid.squares))
+# characters = []
+# for i in range(len(pattern_grid.squares)):
+#     characters.append('-')
+# pattern_grid.setCharacters(characters)
+# pattern_grid.printBlank()
+# pattern = buildShapePattern(pattern_grid)
+# grid = build(pattern)
+# print()
+# grid.printShapes(pattern)
+# exit()
 
 # Very easy
-pattern_grid = easyGrid(4, 2, 4, 4)
+pattern_grid = easyGrid(4, 2, 4, 5)
 pattern = buildShapePattern(pattern_grid)
 grid = build(pattern)
 print()
 grid.printShapes(pattern)
 
-# pattern = buildShapePattern(8, 1, 4, 4)
-pattern_grid = easyGrid(8, 10, 5, 5)
-pattern = buildShapePattern(pattern_grid)
-grid = build(pattern)
-print()
-grid.printShapes(pattern)
+# pattern_grid = easyGrid(8, 10, 5, 5)
+# pattern = buildShapePattern(pattern_grid)
+# grid = build(pattern)
+# print()
+# grid.printShapes(pattern)
 
 # pattern = buildShapePattern(pattern_grid)
 # grid = build(pattern)

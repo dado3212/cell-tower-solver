@@ -2,6 +2,7 @@ from Shape import Shape
 from typing import List, Dict, Optional, Tuple
 import random, math, copy
 from Grid import Grid, easyGrid
+from Utils import is_number_composable
 from Solver import solve
 from Words import global_word_list
 from Types import Square
@@ -9,6 +10,9 @@ from Types import Square
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(grid: Grid) -> List[Shape]:
+    if not is_number_composable(len(grid.squares), grid.minSize, grid.maxSize):
+        raise ValueError('You cannot build a grid of size %d with blocks sized between %d and %d', len(this.squares), minSize, maxSize)
+
     shapes: List[Shape] = []
     is_valid = False
     while not is_valid:
@@ -56,14 +60,9 @@ def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shap
     if is_done(grid, shape_mapping):
         shapes.append(currentShape)
         return shapes
-    num_squares = len(grid.squares)
-    # Too small
-    if num_squares < grid.minSize:
+    if not is_number_composable(len(grid.squares), grid.minSize, grid.maxSize):
         return None
-    # need to figure out a way to generalize this
-    if grid.minSize == grid.maxSize and num_squares % grid.minSize != 0:
-        return None
-    if currentShape.size() == grid.maxSize:
+    if currentShape.size() >= grid.minSize:
         shapes = shapes[::]
         shapes.append(currentShape)
         # Find all of the current empty spaces
