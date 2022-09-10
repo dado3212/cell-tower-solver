@@ -108,6 +108,10 @@ def buildShapePatternCut(grid: Grid, shapes: List[Shape], currentShape: Shape, s
 
     # For each one, try and recursively solve them
     answers = []
+    # Speed up by trivially checking if any of them are the wrong size
+    for empty_shape in empty_shapes:
+        if not is_number_composable(len(empty_shape.squares), grid.minSize, grid.maxSize):
+            return None
     for empty_shape in empty_shapes:
         new_grid = Grid(empty_shape.squares, grid.minSize, grid.maxSize)
         new_shape_mapping = dict()
@@ -138,6 +142,12 @@ def buildShapePatternGrow(grid: Grid, shapes: List[Shape], currentShape: Shape, 
     return None
 
 def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
+    # Temp debugging
+    # x = shapes[::]
+    # x.append(currentShape)
+    # grid.printShapes(x)
+    # print("")
+
     if is_done(grid, shape_mapping):
         shapes.append(currentShape)
         return shapes

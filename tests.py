@@ -62,6 +62,7 @@ class BuilderTest(unittest.TestCase):
         self.assertEqual(is_number_composable(7, 4, 5), False)
         self.assertEqual(is_number_composable(9, 4, 5), True)
         self.assertEqual(is_number_composable(8, 4, 5), True)
+        self.assertEqual(is_number_composable(40001, 4, 12), True)
 
 if __name__ == '__main__':
     unittest.main()
