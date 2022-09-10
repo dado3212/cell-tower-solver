@@ -8,20 +8,19 @@ from Types import Square
 
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
-def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
+def buildShapePattern(grid: Grid) -> List[Shape]:
     shapes: List[Shape] = []
     is_valid = False
     while not is_valid:
-        grid = easyGrid(width, height, minSize, maxSize)
         shapes = buildShapePatternHelper(grid)
         is_valid = True
         for x in shapes:
-            if x.size() < minSize or x.size() > maxSize:
+            if x.size() < grid.minSize or x.size() > grid.maxSize:
                 print("Wrong sizing")
                 is_valid = False
         if is_valid:
-            grid = build(shapes, False)
-            if grid is None:
+            built_grid = build(shapes, False)
+            if built_grid is None:
                 print("No grid")
                 is_valid = False
 

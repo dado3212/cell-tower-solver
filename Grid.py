@@ -11,6 +11,22 @@ def easyGrid(width: int, height: int, minSize: int, maxSize: int, characters: Li
             squares.append((r, c))
     return Grid(squares, minSize, maxSize, characters)
 
+def circleGrid(radius: int):
+    squares = []
+    for r in range(2 * radius + 1):
+        for c in range(2 * radius + 2):
+            if (r-radius)**2 + (c-radius)**2 <= radius**2:
+                squares.append((r, c))
+    return Grid(squares, 4, 4)
+
+def triangleGrid(base: int, height: int):
+    squares = []
+    for r in range(height):
+        for c in range(base):
+            if c <= r:
+                squares.append((r, c))
+    return Grid(squares, 4, 4)
+
 class Grid:
 
     def __init__(this, squares: List[Square], minSize: int, maxSize: int, characters: List[str] = []):
@@ -53,8 +69,8 @@ class Grid:
         character_mapping = dict()
         if len(characters) != len(this.squares):
             raise ValueError('Characters size does not match grid size')
-        for i in range(0, len(squares)):
-            character_mapping[squares[i]] = characters[i]
+        for i in range(0, len(this.squares)):
+            character_mapping[this.squares[i]] = characters[i]
         this.characterMapping = character_mapping
 
     def getCharacter(this, row: int, col: int) -> str:
