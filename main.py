@@ -114,7 +114,7 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # exit()
 
 # Very easy
-pattern_grid = easyGrid(10, 16, 4, 8)
+pattern_grid = easyGrid(12, 12, 4, 8)
 pattern = buildShapePatternHelper(pattern_grid)
 characters = []
 for i in range(len(pattern_grid.squares)):

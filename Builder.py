@@ -31,21 +31,64 @@ def buildShapePattern(grid: Grid) -> List[Shape]:
 
     return shapes
 
-def total_empty_space(grid: Grid, square: Square, shape_mapping: Dict[Square, Optional[Shape]]) -> Shape:
-    if shape_mapping[square] is not None:
-        raise ValueError('This should only be called on empty')
-    empty_shape = Shape([], [square])
-    has_found = True
-    while has_found:
-        has_found = False
-        adjacent = grid.getAdjacentShapeSquares(empty_shape)
-        for pos in adjacent:
-            if shape_mapping[pos] is None and pos not in empty_shape.squares:
-                empty_shape = Shape([], empty_shape.squares + [pos])
-                has_found = True
-    squares = empty_shape.squares
-    squares.sort()
-    return Shape([], squares)
+def total_empty_shapes(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> List[Shape]:
+    empty_shape_mapping: Dict[Square, int] = dict()
+    for square in shape_mapping:
+        empty_shape_mapping[square] = 0
+    squareCount = 1
+
+    same: Dict[int, int] = dict()
+
+    for square in grid.orderedSquares():
+        # It's empty
+        if shape_mapping[square] is None:
+            # Check if any of the adjacents have numbers
+            adjacent = grid.getAdjacentSquares(square)
+            touching = []
+            for adj in adjacent:
+                if empty_shape_mapping[adj] != 0:
+                    touching.append(empty_shape_mapping[adj])
+            touching = list(set(touching))
+            touching.sort()
+            if len(touching) == 0:
+                empty_shape_mapping[square] = squareCount
+                squareCount += 1
+            elif len(touching) == 1:
+                empty_shape_mapping[square] = touching[0]
+            else:
+                empty_shape_mapping[square] = touching[0]
+                for i in range(1, len(touching)):
+                    t = touching[i]
+                    if t not in same:
+                        choosing = touching[0]
+                        if choosing in same:
+                            same[t] = same[choosing]
+                        else:
+                            same[t] = choosing
+                    else:
+                        same[t] = min(same[t], t)
+    # Relax same
+    same_keys = list(same.keys())
+    same_keys.sort()
+    for key in same_keys:
+        maps = same[key]
+        if maps in same:
+            same[key] = same[maps]
+
+    # Build shapes
+    squares: Dict[int, List[Square]] = dict()
+    for square in grid.orderedSquares():
+        shapeCount = empty_shape_mapping[square]
+        if shapeCount != 0:
+            if shapeCount in same:
+                shapeCount = same[shapeCount]
+            if shapeCount in squares:
+                squares[shapeCount].append(square)
+            else:
+                squares[shapeCount] = [square]
+    shapes = [Shape([], squares[x]) for x in squares]
+
+    return shapes
 
 def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     for square in shape_mapping:
@@ -61,16 +104,7 @@ def buildShapePatternCut(grid: Grid, shapes: List[Shape], currentShape: Shape, s
     shapes = shapes[::]
     shapes.append(currentShape)
     # Find all of the current empty spaces
-    empty_squares = dict()
-    empty_shapes = []
-    for square in shape_mapping:
-        if shape_mapping[square] is None:
-            empty_squares[square] = True
-    while len(empty_squares) > 0:
-        empty = total_empty_space(grid, list(empty_squares.keys())[0], shape_mapping)
-        empty_shapes.append(empty)
-        for square in empty.squares:
-            del empty_squares[square]
+    empty_shapes = total_empty_shapes(grid, shape_mapping)
 
     # For each one, try and recursively solve them
     answers = []

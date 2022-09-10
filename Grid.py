@@ -44,33 +44,46 @@ class Grid:
             character_mapping = None
         this.characterMapping = character_mapping
 
-        # Used for caching for perf
-        this.adjacentSquareMapping: Dict[Square, List[Square]] = dict()
+        this.fastSquares = dict()
+        for square in this.squares:
+            this.fastSquares[square] = True
+
+    def orderedSquares(this) -> List[Square]:
+        return sorted(this.squares)
 
     def getAdjacentSquares(this, square: Square) -> List[Square]:
-        if square in this.adjacentSquareMapping:
-            return this.adjacentSquareMapping[square]
-
         up = (square[0] - 1, square[1])
         right = (square[0], square[1] + 1)
         down = (square[0] + 1, square[1])
         left = (square[0], square[1] - 1)
 
-        basic_squares = []
-        for possible in [up, right, down, left]:
-            if possible in this.squares:
-                basic_squares.append(possible)
-        this.adjacentSquareMapping[square] = basic_squares
-        return basic_squares
+        real = []
+        for pos in [up, right, down, left]:
+            if pos in this.fastSquares:
+                real.append(pos)
+        return real
 
     def getAdjacentShapeSquares(this, shape: Shape) -> List[Square]:
-        basic_squares = []
+        adjacent_squares = dict()
         for square in shape.squares:
-            adjacent_squares = this.getAdjacentSquares(square)
-            for adjacent_square in adjacent_squares:
-                if (adjacent_square not in basic_squares and adjacent_square not in shape.squares):
-                    basic_squares.append(adjacent_square)
-        return basic_squares
+            up = (square[0] - 1, square[1])
+            right = (square[0], square[1] + 1)
+            down = (square[0] + 1, square[1])
+            left = (square[0], square[1] - 1)
+
+            adjacent_squares[up] = True
+            adjacent_squares[right] = True
+            adjacent_squares[down] = True
+            adjacent_squares[left] = True
+
+        for square in shape.squares:
+            adjacent_squares.pop(square, None)
+
+        real = []
+        for square in adjacent_squares:
+            if square in this.fastSquares:
+                real.append(square)
+        return real
 
     def setCharacters(this, characters: List[str]) -> None:
         character_mapping = dict()
