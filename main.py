@@ -1,6 +1,6 @@
 from Solver import solve
-from Grid import Grid
-from Builder import build, buildGrid, shapeEccentricity, buildShapePattern
+from Grid import Grid, easyGrid
+from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buildShapePatternHelper
 
 # ??
 # current_grid = [
@@ -96,6 +96,9 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern
 
 # pattern = buildShapePattern(8, 1, 4, 4)
 pattern = buildShapePattern(8, 4, 4, 4)
+
+# grid = Grid([(0, 0), (0, 1), (0, 2), (1, 0)], 4, 4)
+# buildShapePatternHelper(grid)
 
 # Larger pattern
 # pattern = buildShapePattern(6, 10, 4, 4)

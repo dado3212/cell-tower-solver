@@ -13,7 +13,8 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
     shapes: List[Shape] = []
     is_valid = False
     while not is_valid:
-        shapes = buildShapePatternHelper(width, height, minSize, maxSize)
+        grid = easyGrid(width, height, minSize, maxSize)
+        shapes = buildShapePatternHelper(grid)
         # temp_print(shapes, width, height)
         is_valid = True
         for x in shapes:
@@ -144,15 +145,11 @@ def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shap
                 return result
         return None
 
-def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
-    # First, create a grid
-    grid = easyGrid(width, height, minSize, maxSize)
+def buildShapePatternHelper(grid: Grid) -> List[Shape]:
     # Build the empty shape mapping
     shape_mapping: Dict[Square, Optional[Shape]] = dict()
-    for r in range(height):
-        for c in range(width):
-            square = (r, c)
-            shape_mapping[square] = None
+    for square in grid.squares:
+        shape_mapping[square] = None
 
     # And now we depth-first-search
     # for now we'll ignore that maxSize > minSize, and treat them as equal
