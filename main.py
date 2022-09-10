@@ -114,16 +114,20 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # exit()
 
 # Very easy
-pattern_grid = easyGrid(20, 20, 4, 8)
+#
+# Above (22, 22, 4, 8) we start hitting recursion depth problems
+# when building the pattern.
+pattern_grid = easyGrid(10, 10, 4, 8)
 pattern = buildShapePatternHelper(pattern_grid)
 characters = []
 for i in range(len(pattern_grid.squares)):
     characters.append('-')
 pattern_grid.setCharacters(characters)
 pattern_grid.printShapes(pattern)
-# grid = build(pattern)
-# print()
-# grid.printShapes(pattern)
+
+grid = build(pattern, True)
+print()
+grid.printShapes(pattern)
 
 # pattern_grid = easyGrid(8, 10, 5, 5)
 # pattern = buildShapePattern(pattern_grid)

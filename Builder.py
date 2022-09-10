@@ -88,7 +88,7 @@ def total_empty_shapes(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]])
                 squares[shapeCount] = [square]
     shapes = [Shape([], squares[x]) for x in squares]
 
-    return shapes
+    return sorted(shapes, key=lambda s: s.size())
 
 def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     for square in shape_mapping:
@@ -143,10 +143,10 @@ def buildShapePatternGrow(grid: Grid, shapes: List[Shape], currentShape: Shape, 
 
 def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
     # Temp debugging
-    x = shapes[::]
-    x.append(currentShape)
-    grid.printShapes(x)
-    print("")
+    # x = shapes[::]
+    # x.append(currentShape)
+    # grid.printShapes(x)
+    # print("")
 
     if is_done(grid, shape_mapping):
         shapes.append(currentShape)
@@ -208,7 +208,10 @@ def buildGrid(mapping: Dict[Shape, str]) -> Grid:
         minSize = min(minSize, shape.size())
         maxSize = max(maxSize, shape.size())
 
-    return Grid(squares, minSize, maxSize, characters)
+    grid = Grid(squares, minSize, maxSize, characters)
+    # temporary debugging
+    grid.printBlank()
+    return grid
 
 # For a list of shapes, this randomly pulls a set of matching length words
 # from the eligible word list.
