@@ -7,6 +7,8 @@ from Words import global_word_list
 from Types import Square
 from Utils import squareIsValid, temp_print
 
+
+
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
@@ -88,8 +90,8 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
 def select_square(square_options: Dict[Square, List[Square]], shape_mapping: Dict[Square, Optional[Shape]], minSize: int) -> Tuple[Square, Square]:
     print(square_options)
     # Check if any squares only have one option
-    second_choice = []
-    third_choice = []
+    second_choice = dict()
+    third_choice = dict()
     fourth_choice = []
     for square in square_options:
         options = square_options[square]
@@ -103,17 +105,25 @@ def select_square(square_options: Dict[Square, List[Square]], shape_mapping: Dic
             for opt in options:
                 opt_shape = shape_mapping[opt]
                 if opt_shape is not None and opt_shape.size() < minSize:
-                    second_choice.append((square, opt))
+                    if opt_shape.size() in second_choice:
+                        second_choice[opt_shape.size()].append((square, opt))
+                    else:
+                        second_choice[opt_shape.size()] = [(square, opt)]
                 if opt_shape is not None:
-                    third_choice.append((square, opt))
+                    if opt_shape.size() in third_choice:
+                        third_choice[opt_shape.size()].append((square, opt))
+                    else:
+                        third_choice[opt_shape.size()] = [(square, opt)]
                 fourth_choice.append((square, opt))
-    print(second_choice)
-    print(third_choice)
-    print(fourth_choice)
+    # print(second_choice)
+    # print(third_choice)
+    # print(fourth_choice)
     if len(second_choice) > 0:
-        return random.choice(second_choice)
+        # Pick the smallest group
+        return random.choice(second_choice[min(second_choice.keys())])
     if len(third_choice) > 0:
-        return random.choice(third_choice)
+        # Try and pick the smallest again?
+        return random.choice(third_choice[min(third_choice.keys())])
     return random.choice(fourth_choice)
 
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:

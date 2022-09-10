@@ -91,7 +91,7 @@ empty_grid = Grid([
 # print()
 # print()
 
-pattern = buildShapePattern(8, 2, 4, 4)
+pattern = buildShapePattern(4, 2, 4, 4)
 
 # Larger pattern
 # pattern = buildShapePattern(6, 10, 4, 4)
