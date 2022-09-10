@@ -6,10 +6,7 @@ from typing import List
 from Types import Square
 from Words import max_length, is_valid_word, chunk_matches_word
 
-def squareIsValid(square: Square, width: int, height: int) -> bool:
-    return (square[0] >= 0 and square[0] < height and square[1] >= 0 and square[1] < width)
-
-def getExpansionCells(shape: Shape, width: int, height: int) -> List[Square]:
+def getExpansionCells(grid: Grid, shape: Shape) -> List[Square]:
     basic_squares = []
     for square in shape.squares:
         up = (square[0] - 1, square[1])
@@ -17,13 +14,13 @@ def getExpansionCells(shape: Shape, width: int, height: int) -> List[Square]:
         down = (square[0] + 1, square[1])
         left = (square[0], square[1] - 1)
         for possible in [up, right, down, left]:
-            if (possible not in basic_squares and squareIsValid(possible, width, height) and shape.cellIsClaimable(possible)):
+            if (possible not in basic_squares and possible in grid.squares and shape.cellIsClaimable(possible)):
                 basic_squares.append(possible)
     # We should check some word validity here to prune bad options
     return basic_squares
 
 def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
-    cells = getExpansionCells(shape, grid.width, grid.height)
+    cells = getExpansionCells(grid, shape)
     shapes = []
     for cell in cells:
         squares = [x for x in shape.squares]

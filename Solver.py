@@ -61,21 +61,17 @@ def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
 
 def solve(grid: Grid) -> Optional[List[Shape]]:
     square_mapping: Dict[str, List[Shape]] = {}
-    for r in range(0, grid.height):
-        for c in range(0, grid.width):
-            square = (r, c)
-            key = getKey(square)
-            square_mapping[key] = []
+    for square in grid.squares:
+        key = getKey(square)
+        square_mapping[key] = []
 
-    for r in range(0, grid.height):
-        for c in range(0, grid.width):
-            square = (r, c)
-            key = getKey(square)
-            valid_shapes = find_words_for_seed(grid, square)
-            for shape in valid_shapes:
-                for square in shape.squares:
-                    key = getKey(square)
-                    square_mapping[key].append(shape)
+    for square in grid.squares:
+        key = getKey(square)
+        valid_shapes = find_words_for_seed(grid, square)
+        for shape in valid_shapes:
+            for square in shape.squares:
+                key = getKey(square)
+                square_mapping[key].append(shape)
 
     # Dedupe step (there's a way to do this higher in the stack but I can't think right now)
     for key in square_mapping:

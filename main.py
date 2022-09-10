@@ -92,10 +92,16 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # print()
 
 # Very easy
-# pattern = buildShapePattern(4, 1, 4, 4)
+pattern = buildShapePattern(4, 2, 4, 4)
+grid = build(pattern)
+print()
+grid.printShapes(pattern)
 
 # pattern = buildShapePattern(8, 1, 4, 4)
-pattern = buildShapePattern(8, 4, 4, 4)
+pattern = buildShapePattern(8, 10, 5, 5)
+grid = build(pattern)
+print()
+grid.printShapes(pattern)
 
 # grid = Grid([(0, 0), (0, 1), (0, 2), (1, 0)], 4, 4)
 # buildShapePatternHelper(grid)

@@ -71,10 +71,18 @@ class Grid:
         return word
 
     def printBlank(this) -> None:
-        for r in range(0, this.height):
+        maxHeight = 0
+        maxWidth = 0
+        for square in this.squares:
+            maxHeight = max(square[0] + 1, maxHeight)
+            maxWidth = max(square[1] + 1, maxWidth)
+        for r in range(0, maxHeight):
             row = ""
-            for c in range(0, this.width):
-                row += ' ' + this.getCharacter(r, c).upper() + ' '
+            for c in range(0, maxWidth):
+                if (r, c) not in this.squares:
+                    row += '   '
+                else:
+                    row += ' ' + this.getCharacter(r, c).upper() + ' '
             print(row)
 
     def printShapes(this, shapes: List[Shape]) -> None:
