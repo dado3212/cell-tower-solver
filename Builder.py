@@ -29,6 +29,20 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
 
     return shapes
 
+def total_empty_space(grid: Grid, square: Square, shape_mapping: Dict[Square, Optional[Shape]]) -> Shape:
+    if shape_mapping[square] is not None:
+        raise ValueError('This should only be called on empty')
+    empty_shape = Shape([], [square])
+    has_found = True
+    while has_found:
+        has_found = False
+        adjacent = grid.getAdjacentShapeSquares(empty_shape)
+        for pos in adjacent:
+            if shape_mapping[pos] is None and pos not in empty_shape.squares:
+                empty_shape = Shape([], empty_shape.squares + [pos])
+                has_found = True
+    return empty_shape
+
 # Technically some of these grids will be valid, but not solvable.
 # It's easier to just proceed until you can't, and then backtrack
 # a little further.
@@ -42,6 +56,16 @@ def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     for square in grid.squares():
         shape = shape_mapping[square]
         if shape is None:
+            empty_shape = total_empty_space(grid, square, shape_mapping)
+            if (empty_shape.size() < grid.minSize):
+                adjacent = grid.getAdjacentShapeSquares(empty_shape)
+                has_valid_adjacent = False
+                for a in adjacent:
+                    adjacent_shape = shape_mapping[a]
+                    if adjacent_shape is not None and adjacent_shape.size() + empty_shape.size() <= grid.maxSize:
+                        has_valid_adjacent = True
+                if not has_valid_adjacent:
+                    return False
             has_empty_squares = True
             neighbors = grid.getAdjacentSquares(square)
             has_valid_neighbor = False

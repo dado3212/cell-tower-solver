@@ -51,7 +51,7 @@ class BuilderTest(unittest.TestCase):
 
         shape = Shape([], [(0, 2), (0, 3), (0, 4), (0, 5)])
         shape_mapping = self.build_mapping_from_grid_shape(grid, [shape])
-        self.assertEqual(is_valid(grid, shape_mapping), True)
+        self.assertEqual(is_valid(grid, shape_mapping), False)
 
         shape = Shape([], [(0, 0), (0, 1), (0, 2), (0, 3)])
         shape_mapping = self.build_mapping_from_grid_shape(grid, [shape])
