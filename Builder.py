@@ -1,11 +1,11 @@
 from Shape import Shape
 from typing import List, Dict, Optional, Tuple
 import random, math, copy
-from Grid import Grid
+from Grid import Grid, easyGrid
 from Solver import solve
 from Words import global_word_list
 from Types import Square
-from Utils import squareIsValid, temp_print
+from Utils import squareIsValid
 
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
@@ -14,14 +14,14 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
     is_valid = False
     while not is_valid:
         shapes = buildShapePatternHelper(width, height, minSize, maxSize)
-        temp_print(shapes, width, height)
+        # temp_print(shapes, width, height)
         is_valid = True
         for x in shapes:
             if x.size() < minSize or x.size() > maxSize:
                 print("Wrong sizing")
                 is_valid = False
         if is_valid:
-            temp_print(shapes, width, height)
+            # temp_print(shapes, width, height)
             grid = build(shapes, True)
             if grid is None:
                 print("No grid")
@@ -53,7 +53,7 @@ def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     # check the neighbors
     has_empty_squares = False
     min_shape_size = grid.maxSize + 1
-    for square in grid.squares():
+    for square in grid.squares:
         shape = shape_mapping[square]
         if shape is None:
             empty_shape = total_empty_space(grid, square, shape_mapping)
@@ -103,7 +103,7 @@ def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shap
     # temporary printing for debugging
     x = shapes[::]
     x.append(currentShape)
-    temp_print(x, grid.width, grid.height)
+    grid.printShapes(x)
     print(len(shapes))
 
     if is_done(grid, shape_mapping):
@@ -146,7 +146,7 @@ def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shap
 
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
     # First, create a grid
-    grid = Grid(width, height, minSize, maxSize)
+    grid = easyGrid(width, height, minSize, maxSize)
     # Build the empty shape mapping
     shape_mapping: Dict[Square, Optional[Shape]] = dict()
     for r in range(height):
@@ -166,7 +166,7 @@ def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int)
 
     # track this with a stack, where you can push on a square, and also a "end of shape" choice
     a = buildShapePatternRecurse(grid, [], Shape([], [(0, 0)]), shape_mapping)
-    temp_print(a, width, height)
+    grid.printShapes(a)
     exit()
     return a
 
@@ -199,7 +199,7 @@ def buildGrid(mapping: Dict[Shape, str]) -> Grid:
         for i in range(0, len(shape.squares)):
             raw_grid[shape.squares[i][0]][shape.squares[i][1]] = mapping[shape][i]
 
-    return Grid(width, height, 4, 4, raw_grid)
+    return easyGrid(width, height, 4, 4, raw_grid)
 
 # For a list of shapes, this randomly pulls a set of matching length words
 # from the eligible word list.
