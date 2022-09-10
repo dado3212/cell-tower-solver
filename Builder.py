@@ -1,6 +1,6 @@
 from Shape import Shape
 from typing import List, Dict, Optional, Tuple
-import random, math, copy
+import random, math
 from Grid import Grid, easyGrid
 from Utils import is_number_composable
 from Solver import solve
@@ -17,13 +17,14 @@ def buildShapePattern(grid: Grid) -> List[Shape]:
     is_valid = False
     while not is_valid:
         shapes = buildShapePatternHelper(grid)
+        grid.printShapes(shapes)
         is_valid = True
         for x in shapes:
             if x.size() < grid.minSize or x.size() > grid.maxSize:
                 print("Wrong sizing")
                 is_valid = False
         if is_valid:
-            built_grid = build(shapes, False)
+            built_grid = build(shapes, True)
             if built_grid is None:
                 print("No grid")
                 is_valid = False
@@ -56,57 +57,70 @@ def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
 
     return True
 
+def buildShapePatternCut(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
+    shapes = shapes[::]
+    shapes.append(currentShape)
+    # Find all of the current empty spaces
+    empty_squares = dict()
+    empty_shapes = []
+    for square in shape_mapping:
+        if shape_mapping[square] is None:
+            empty_squares[square] = True
+    while len(empty_squares) > 0:
+        empty = total_empty_space(grid, list(empty_squares.keys())[0], shape_mapping)
+        empty_shapes.append(empty)
+        for square in empty.squares:
+            del empty_squares[square]
+
+    # For each one, try and recursively solve them
+    answers = []
+    for empty_shape in empty_shapes:
+        new_grid = Grid(empty_shape.squares, grid.minSize, grid.maxSize)
+        new_shape_mapping = dict()
+        for square in new_grid.squares:
+            new_shape_mapping[square] = None
+        answer = buildShapePatternRecurse(new_grid, [], Shape([], [new_grid.squares[0]]), new_shape_mapping)
+        if answer is None:
+            return None
+        else:
+            answers.append(answer)
+    result = shapes
+    for answer in answers:
+        result += answer
+    return result
+
+def buildShapePatternGrow(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
+    options = grid.getAdjacentShapeSquares(currentShape)
+    options = [opt for opt in options if shape_mapping[opt] is None]
+    random.shuffle(options)
+    for option in options:
+        new_shape = Shape([], currentShape.squares + [option])
+        new_shape_mapping = shape_mapping.copy()
+        for square in new_shape.squares:
+            new_shape_mapping[square] = new_shape
+        result = buildShapePatternRecurse(grid, shapes, new_shape, new_shape_mapping)
+        if (result is not None):
+            return result
+    return None
+
 def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
     if is_done(grid, shape_mapping):
         shapes.append(currentShape)
         return shapes
     if not is_number_composable(len(grid.squares), grid.minSize, grid.maxSize):
         return None
+    if currentShape.size() == grid.maxSize:
+        return buildShapePatternCut(grid, shapes, currentShape, shape_mapping)
     if currentShape.size() >= grid.minSize:
-        shapes = shapes[::]
-        shapes.append(currentShape)
-        # Find all of the current empty spaces
-        empty_squares = dict()
-        empty_shapes = []
-        for square in shape_mapping:
-            if shape_mapping[square] is None:
-                empty_squares[square] = True
-        while len(empty_squares) > 0:
-            empty = total_empty_space(grid, list(empty_squares.keys())[0], shape_mapping)
-            empty_shapes.append(empty)
-            for square in empty.squares:
-                del empty_squares[square]
-
-        # For each one, try and recursively solve them
-        answers = []
-        for empty_shape in empty_shapes:
-            new_grid = Grid(empty_shape.squares, grid.minSize, grid.maxSize)
-            new_shape_mapping = dict()
-            for square in new_grid.squares:
-                new_shape_mapping[square] = None
-            answer = buildShapePatternRecurse(new_grid, [], Shape([], [new_grid.squares[0]]), new_shape_mapping)
-            if answer is None:
-                return None
+        grow_to_sizes = list(range(grid.minSize, grid.maxSize + 1))
+        random.shuffle(grow_to_sizes)
+        for grow_to in grow_to_sizes:
+            if currentShape.size() == grow_to:
+                return buildShapePatternCut(grid, shapes, currentShape, shape_mapping)
             else:
-                answers.append(answer)
-        result = shapes
-        for answer in answers:
-            result += answer
-        return result
+                return buildShapePatternGrow(grid, shapes, currentShape, shape_mapping)
     else:
-        # all choices
-        options = grid.getAdjacentShapeSquares(currentShape)
-        options = [opt for opt in options if shape_mapping[opt] is None]
-        random.shuffle(options)
-        for option in options:
-            new_shape = Shape([], currentShape.squares + [option])
-            new_shape_mapping = copy.deepcopy(shape_mapping)
-            for square in new_shape.squares:
-                new_shape_mapping[square] = new_shape
-            result = buildShapePatternRecurse(grid, shapes, new_shape, new_shape_mapping)
-            if (result is not None):
-                return result
-        return None
+        return buildShapePatternGrow(grid, shapes, currentShape, shape_mapping)
 
 def buildShapePatternHelper(grid: Grid) -> List[Shape]:
     # Build the empty shape mapping

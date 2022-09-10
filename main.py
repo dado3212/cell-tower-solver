@@ -114,11 +114,16 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # exit()
 
 # Very easy
-pattern_grid = easyGrid(4, 2, 4, 5)
-pattern = buildShapePattern(pattern_grid)
-grid = build(pattern)
-print()
-grid.printShapes(pattern)
+pattern_grid = easyGrid(10, 20, 4, 8)
+pattern = buildShapePatternHelper(pattern_grid)
+characters = []
+for i in range(len(pattern_grid.squares)):
+    characters.append('-')
+pattern_grid.setCharacters(characters)
+pattern_grid.printShapes(pattern)
+# grid = build(pattern)
+# print()
+# grid.printShapes(pattern)
 
 # pattern_grid = easyGrid(8, 10, 5, 5)
 # pattern = buildShapePattern(pattern_grid)
