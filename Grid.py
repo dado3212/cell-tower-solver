@@ -38,6 +38,15 @@ class Grid:
                 basic_squares.append(possible)
         return basic_squares
 
+    def getAdjacentShapeSquares(this, shape: Shape) -> List[Square]:
+        basic_squares = []
+        for square in shape.squares:
+            adjacent_squares = this.getAdjacentSquares(square)
+            for adjacent_square in adjacent_squares:
+                if (adjacent_square not in basic_squares and adjacent_square not in shape.squares):
+                    basic_squares.append(adjacent_square)
+        return basic_squares
+
     def setCharacters(this, characters: List[List[str]]) -> None:
         this.characters = characters
 

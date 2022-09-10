@@ -155,34 +155,82 @@ def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
 
     return has_empty_squares or min_shape_size >= grid.minSize
 
-def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
-    square_options: Dict[Square, List[Square]] = dict()
-    shape_mapping: Dict[Square, Optional[Shape]] = dict()
+def randomEmptySquare(shape_mapping: Dict[Square, Optional[Shape]]) -> Square:
+    opts = []
+    for square in shape_mapping:
+        if shape_mapping[square] is None:
+            opts.append(square)
+    return random.choice(opts)
 
-    # Set up all_squares and square_options which we will use
+def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
+    for square in shape_mapping:
+        shape = shape_mapping[square]
+        if shape is None:
+            return False
+        if shape.size() < grid.minSize or shape.size() > grid.maxSize:
+            return False
+    return True
+
+def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
+    if is_done(grid, shape_mapping):
+        shapes.append(currentShape)
+        return shapes
+    if not is_valid(grid, shape_mapping):
+        return None
+    if currentShape.size() == grid.maxSize:
+        # Pick a new place to start from
+        print('pick a new place')
+        print(grid, shapes, currentShape.squares)
+        exit()
+    else:
+        # all choices
+        options = grid.getAdjacentShapeSquares(currentShape)
+        options = [opt for opt in options if shape_mapping[opt] is None]
+        random.shuffle(options)
+        for option in options:
+            new_shape = Shape([], currentShape.squares + [option])
+            new_shape_mapping = shape_mapping
+            for square in new_shape.squares:
+                new_shape_mapping[square] = new_shape
+            result = buildShapePatternRecurse(grid, shapes, new_shape, new_shape_mapping)
+            if (result is not None):
+                return result
+        return None
+
+def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
+    # First, create a grid
+    grid = Grid(width, height, minSize, maxSize)
+    # Build the empty shape mapping
+    shape_mapping: Dict[Square, Optional[Shape]] = dict()
     for r in range(height):
         for c in range(width):
             square = (r, c)
             shape_mapping[square] = None
 
-            # Every square starts with a list of adjacent squares that it
-            # can join. Because the grid starts with no shapes, we can
-            # ignore the validity of these adjacent squares for now
-            adjacent_squares: List[Square] = []
-            # Up
-            if (r > 0):
-                adjacent_squares.append((r - 1, c))
-            # Right
-            if (c < width - 1):
-                adjacent_squares.append((r, c + 1))
-            # Down
-            if (r < height - 1):
-                adjacent_squares.append((r + 1, c))
-            # Left
-            if (c > 0):
-                adjacent_squares.append((r, c - 1))
+    # And now we depth-first-search
+    # for now we'll ignore that maxSize > minSize, and treat them as equal
+    # Pseudocode
+    # pick a random square
+    # build a random shape of size minSize
+    # at each growth point, check if the new grid is valid
+    # if it's not, choose a different shape
+    # if none of them are valid, back up
+    # if none of them are valid, pick a new unfilled square
 
-            square_options[square] = adjacent_squares
+    # track this with a stack, where you can push on a square, and also a "end of shape" choice
+    a = buildShapePatternRecurse(grid, [], Shape([], [(0, 0)]), shape_mapping)
+    print(a)
+    return a
+    exit()
+    chosen_squares = []
+    seed_square = randomEmptySquare(shape_mapping)
+    chosen_squares.append(seed_square)
+    lengthOfCurrentShape = 1
+    while (lengthOfCurrentShape < minSize):
+        print(chosen_squares[-1])
+        new_squares = grid.getAdjacentSquares(chosen_squares[-1])
+        print(new_squares)
+        exit()
 
     # Proceed
     while (True):
