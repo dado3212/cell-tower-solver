@@ -44,7 +44,13 @@ class Grid:
             character_mapping = None
         this.characterMapping = character_mapping
 
+        # Used for caching for perf
+        this.adjacentSquareMapping: Dict[Square, List[Square]] = dict()
+
     def getAdjacentSquares(this, square: Square) -> List[Square]:
+        if square in this.adjacentSquareMapping:
+            return this.adjacentSquareMapping[square]
+
         up = (square[0] - 1, square[1])
         right = (square[0], square[1] + 1)
         down = (square[0] + 1, square[1])
@@ -52,8 +58,9 @@ class Grid:
 
         basic_squares = []
         for possible in [up, right, down, left]:
-            if (possible in this.squares):
+            if possible in this.squares:
                 basic_squares.append(possible)
+        this.adjacentSquareMapping[square] = basic_squares
         return basic_squares
 
     def getAdjacentShapeSquares(this, shape: Shape) -> List[Square]:
