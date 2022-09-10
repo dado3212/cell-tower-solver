@@ -143,10 +143,10 @@ def buildShapePatternGrow(grid: Grid, shapes: List[Shape], currentShape: Shape, 
 
 def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
     # Temp debugging
-    # x = shapes[::]
-    # x.append(currentShape)
-    # grid.printShapes(x)
-    # print("")
+    x = shapes[::]
+    x.append(currentShape)
+    grid.printShapes(x)
+    print("")
 
     if is_done(grid, shape_mapping):
         shapes.append(currentShape)
