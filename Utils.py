@@ -63,13 +63,13 @@ def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
 # ======
 
 def temp_print(shapes: List[Shape], width: int, height: int) -> None:
-    grid = []
-    for r in range(0, height):
-        f = []
-        for c in range(0, width):
-            f.append(' ')
-        grid.append(f)
-    empty_grid = Grid(grid)
+    # grid = []
+    # for r in range(0, height):
+    #     f = []
+    #     for c in range(0, width):
+    #         f.append(' ')
+    #     grid.append(f)
+    empty_grid = Grid(width, height, 4, 4)
 
     empty_grid.printShapes(shapes)
     print("")

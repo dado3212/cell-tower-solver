@@ -2,18 +2,53 @@ from typing import List, Tuple
 from Colors import nthSunflowerColor, printColor
 from Shape import Shape
 from Types import Square
+from Types import Square
 
 class Grid:
-    # Squares is a list of points in lexical order
-    def __init__(this, grid: List[List[str]]):
-        this.grid = grid
-        this.width: int = len(grid[0])
-        this.height: int = len(grid)
+    def __init__(this, width: int, height: int, minSize: int, maxSize: int, characters: List[List[str]] = []):
+        this.width = width
+        this.height = height
+        this.minSize = minSize
+        this.maxSize = maxSize
+        this.characters = None
+        # Simple validations
+        if len(characters) != 0:
+            if len(characters[0]) != width:
+                raise ValueError('Width appears to be wrong')
+            if len(characters) != height:
+                raise ValueError('Height appears to be wrong')
+            this.characters = characters
+
+    def squares(this) -> List[Square]:
+        squares = []
+        for r in range(this.height):
+            for c in range(this.width):
+                squares.append((r, c))
+        return squares
+
+    def getAdjacentSquares(this, square: Square) -> List[Square]:
+        up = (square[0] - 1, square[1])
+        right = (square[0], square[1] + 1)
+        down = (square[0] + 1, square[1])
+        left = (square[0], square[1] - 1)
+
+        basic_squares = []
+        for possible in [up, right, down, left]:
+            if (possible[0] >= 0 and possible[0] < this.height and possible[1] >= 0 and possible[1] < this.width):
+                basic_squares.append(possible)
+        return basic_squares
+
+    def setCharacters(this, characters: List[List[str]]) -> None:
+        this.characters = characters
 
     def getCharacter(this, row: int, col: int) -> str:
-        return this.grid[row][col]
+        if this.characters is None:
+            return ''
+        return this.characters[row][col]
 
     def getWord(this, shape: Shape) -> str:
+        if this.characters is None:
+            raise ValueError('No characters are set, a word has no meaning')
         word = ""
         for square in shape.squares:
             word += this.getCharacter(square[0], square[1])

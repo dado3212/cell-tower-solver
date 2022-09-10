@@ -7,8 +7,6 @@ from Words import global_word_list
 from Types import Square
 from Utils import squareIsValid, temp_print
 
-
-
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
@@ -126,6 +124,38 @@ def select_square(square_options: Dict[Square, List[Square]], shape_mapping: Dic
         return random.choice(third_choice[min(third_choice.keys())])
     return random.choice(fourth_choice)
 
+# Technically some of these grids will be valid, but not solvable.
+# It's easier to just proceed until you can't, and then backtrack
+# a little further.
+# If we run into optimization problems we can make this a little
+# more stringent.
+def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
+    # for each square in grid
+    # check the neighbors
+    has_empty_squares = False
+    min_shape_size = grid.maxSize + 1
+    for square in grid.squares():
+        neighbors = grid.getAdjacentSquares(square)
+        has_valid_neighbor = False
+        for neighbor in neighbors:
+            neighbor_shape = shape_mapping[neighbor]
+            if neighbor_shape is None:
+                has_valid_neighbor = True
+            else:
+                size = neighbor_shape.size()
+                if (size < grid.maxSize):
+                    has_valid_neighbor = True
+        # test
+        shape = shape_mapping[square]
+        if shape is None:
+            has_empty_squares = True
+        else:
+            min_shape_size = min(min_shape_size, shape.size())
+
+        if not has_valid_neighbor:
+            return False
+    return has_empty_squares or min_shape_size >= grid.minSize
+
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
     square_options: Dict[Square, List[Square]] = dict()
     shape_mapping: Dict[Square, Optional[Shape]] = dict()
@@ -225,13 +255,13 @@ def shapeEccentricity(shapes: List[Shape]) -> float:
 
 # Takes in a mapping of shapes to words, and basically builds the empty grid in reverse
 def buildGrid(mapping: Dict[Shape, str]) -> Grid:
-    width = max([shape.maxCol() for shape in mapping.keys()])
-    height = max([shape.maxRow() for shape in mapping.keys()])
+    width = max([shape.maxCol() for shape in mapping.keys()]) + 1
+    height = max([shape.maxRow() for shape in mapping.keys()]) + 1
 
     raw_grid = []
-    for _ in range(0, height + 1):
+    for _ in range(0, height):
         row = []
-        for _ in range(0, width + 1):
+        for _ in range(0, width):
             row.append(' ')
         raw_grid.append(row)
 
@@ -239,7 +269,7 @@ def buildGrid(mapping: Dict[Shape, str]) -> Grid:
         for i in range(0, len(shape.squares)):
             raw_grid[shape.squares[i][0]][shape.squares[i][1]] = mapping[shape][i]
 
-    return Grid(raw_grid)
+    return Grid(width, height, 4, 4, raw_grid)
 
 # For a list of shapes, this randomly pulls a set of matching length words
 # from the eligible word list.

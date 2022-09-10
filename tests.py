@@ -1,6 +1,8 @@
 import unittest
 from Words import chunk_matches_word
 from Shape import Shape
+from Builder import is_valid
+from Grid import Grid
 
 class WordTest(unittest.TestCase):
 
@@ -23,6 +25,19 @@ class ShapeTest(unittest.TestCase):
         shape2 = Shape([], [(0, 3), (1, 1), (1, 2), (1, 3), (1, 4), (2, 0), (2, 1), (2, 2), (2, 3)])
         self.assertEqual(shape2.size(), 9)
         self.assertEqual(shape2.numSides(), 12)
+
+class BuilderTest(unittest.TestCase):
+
+    def test_is_valid(self):
+        grid = Grid(8, 1, 4, 4)
+        shape = Shape([], [(0, 1), (0, 2), (0, 3), (0, 4)])
+        shape_mapping: Dict[Square, Optional[Shape]] = dict()
+        for square in grid.squares():
+            if square in shape.squares:
+                shape_mapping[square] = shape
+            else:
+                shape_mapping[square] = None
+        self.assertEqual(is_valid(grid, shape_mapping), False)
 
 if __name__ == '__main__':
     unittest.main()
