@@ -3,6 +3,8 @@ from Words import chunk_matches_word
 from Shape import Shape
 from Builder import is_valid
 from Grid import Grid
+from typing import List, Dict, Optional
+from Types import Square
 
 class WordTest(unittest.TestCase):
 
@@ -28,16 +30,32 @@ class ShapeTest(unittest.TestCase):
 
 class BuilderTest(unittest.TestCase):
 
-    def test_is_valid(self):
-        grid = Grid(8, 1, 4, 4)
-        shape = Shape([], [(0, 1), (0, 2), (0, 3), (0, 4)])
+    def build_mapping_from_grid_shape(this, grid: Grid, shapes: List[Shape]) -> Dict[Square, Optional[Shape]]:
         shape_mapping: Dict[Square, Optional[Shape]] = dict()
         for square in grid.squares():
-            if square in shape.squares:
-                shape_mapping[square] = shape
-            else:
+            found_shape = False
+            for shape in shapes:
+                if square in shape.squares:
+                    found_shape = True
+                    shape_mapping[square] = shape
+            if not found_shape:
                 shape_mapping[square] = None
+        return shape_mapping
+
+    def test_is_valid(self):
+        grid = Grid(8, 1, 4, 4)
+
+        shape = Shape([], [(0, 1), (0, 2), (0, 3), (0, 4)])
+        shape_mapping = self.build_mapping_from_grid_shape(grid, [shape])
         self.assertEqual(is_valid(grid, shape_mapping), False)
+
+        shape = Shape([], [(0, 2), (0, 3), (0, 4), (0, 5)])
+        shape_mapping = self.build_mapping_from_grid_shape(grid, [shape])
+        self.assertEqual(is_valid(grid, shape_mapping), True)
+
+        shape = Shape([], [(0, 0), (0, 1), (0, 2), (0, 3)])
+        shape_mapping = self.build_mapping_from_grid_shape(grid, [shape])
+        self.assertEqual(is_valid(grid, shape_mapping), True)
 
 if __name__ == '__main__':
     unittest.main()

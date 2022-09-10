@@ -135,25 +135,24 @@ def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     has_empty_squares = False
     min_shape_size = grid.maxSize + 1
     for square in grid.squares():
-        neighbors = grid.getAdjacentSquares(square)
-        has_valid_neighbor = False
-        for neighbor in neighbors:
-            neighbor_shape = shape_mapping[neighbor]
-            if neighbor_shape is None:
-                has_valid_neighbor = True
-            else:
-                size = neighbor_shape.size()
-                if (size < grid.maxSize):
-                    has_valid_neighbor = True
-        # test
         shape = shape_mapping[square]
         if shape is None:
             has_empty_squares = True
+            neighbors = grid.getAdjacentSquares(square)
+            has_valid_neighbor = False
+            for neighbor in neighbors:
+                neighbor_shape = shape_mapping[neighbor]
+                if neighbor_shape is None:
+                    has_valid_neighbor = True
+                else:
+                    size = neighbor_shape.size()
+                    if (size < grid.maxSize):
+                        has_valid_neighbor = True
+            if not has_valid_neighbor:
+                return False
         else:
             min_shape_size = min(min_shape_size, shape.size())
 
-        if not has_valid_neighbor:
-            return False
     return has_empty_squares or min_shape_size >= grid.minSize
 
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
