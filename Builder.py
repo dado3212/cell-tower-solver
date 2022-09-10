@@ -1,5 +1,5 @@
 from Shape import Shape
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 import random, math
 from Grid import Grid
 from Solver import solve
@@ -14,13 +14,14 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
     is_valid = False
     while not is_valid:
         shapes = buildShapePatternHelper(width, height, minSize, maxSize)
+        temp_print(shapes, width, height)
         is_valid = True
         for x in shapes:
             if x.size() < minSize or x.size() > maxSize:
                 print("Wrong sizing")
                 is_valid = False
         if is_valid:
-            temp_print(shapes)
+            temp_print(shapes, width, height)
             grid = build(shapes, True)
             if grid is None:
                 print("No grid")
@@ -53,11 +54,8 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
     if len(need_adjustment) == 0:
         return shapes
 
-    temp_print(need_adjustment, width, height)
-
     # Solve the first one, do this recursively
     to_fix = need_adjustment[0]
-    temp_print([to_fix], width, height)
 
     adjacent_squares = altExpansionCells(to_fix, width, height)
 
@@ -76,7 +74,6 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
             for s in shapes:
                 if s != to_fix and s != shape:
                     new_shapes.append(s)
-            temp_print(new_shapes, width, height)
             # exit()
             return fix_pass(new_shapes, width, height, minSize, maxSize)
 
@@ -85,69 +82,115 @@ def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize
     exit()
     return shapes
 
+# [0, 1, 2, 3, 4, 5, 6, 7]
+
+# Tuple of the square that will be joined, and the square that it will join
+def select_square(square_options: Dict[Square, List[Square]], shape_mapping: Dict[Square, Optional[Shape]], minSize: int) -> Tuple[Square, Square]:
+    print(square_options)
+    # Check if any squares only have one option
+    second_choice = []
+    third_choice = []
+    fourth_choice = []
+    for square in square_options:
+        options = square_options[square]
+        if len(options) == 0:
+            print("Ah shit, what did I do")
+            exit()
+        if len(options) == 1:
+            return (square, options[0])
+        else:
+            # Check if it has shapes that are too small
+            for opt in options:
+                opt_shape = shape_mapping[opt]
+                if opt_shape is not None and opt_shape.size() < minSize:
+                    second_choice.append((square, opt))
+                if opt_shape is not None:
+                    third_choice.append((square, opt))
+                fourth_choice.append((square, opt))
+    print(second_choice)
+    print(third_choice)
+    print(fourth_choice)
+    if len(second_choice) > 0:
+        return random.choice(second_choice)
+    if len(third_choice) > 0:
+        return random.choice(third_choice)
+    return random.choice(fourth_choice)
+
 def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
-    unfilled_squares: Dict[Square, bool] = dict()
-    mapped_squares: Dict[Square, Shape] = dict()
+    square_options: Dict[Square, List[Square]] = dict()
+    shape_mapping: Dict[Square, Optional[Shape]] = dict()
+
+    # Set up all_squares and square_options which we will use
     for r in range(height):
         for c in range(width):
             square = (r, c)
-            unfilled_squares[square] = False
+            shape_mapping[square] = None
 
-    min_colors = math.ceil(width * height / maxSize)
-    max_colors = math.floor(width * height / minSize)
-    starting_color_count = random.randint(min_colors, max_colors)
+            # Every square starts with a list of adjacent squares that it
+            # can join. Because the grid starts with no shapes, we can
+            # ignore the validity of these adjacent squares for now
+            adjacent_squares: List[Square] = []
+            # Up
+            if (r > 0):
+                adjacent_squares.append((r - 1, c))
+            # Right
+            if (c < width - 1):
+                adjacent_squares.append((r, c + 1))
+            # Down
+            if (r < height - 1):
+                adjacent_squares.append((r + 1, c))
+            # Left
+            if (c > 0):
+                adjacent_squares.append((r, c - 1))
 
-    while (len(unfilled_squares) > 0):
-        # pick a random square
-        random_square = random.sample(unfilled_squares.keys(), 1)[0]
-        del unfilled_squares[random_square]
+            square_options[square] = adjacent_squares
 
-        # find an adjacent cell that is in bounds
-        up = (random_square[0] - 1, random_square[1])
-        right = (random_square[0], random_square[1] + 1)
-        down = (random_square[0] + 1, random_square[1])
-        left = (random_square[0], random_square[1] - 1)
+    # Proceed
+    while (True):
+        print("")
+        if len(square_options) == 0:
+            break
+        # Pick a square
+        selected = select_square(square_options, shape_mapping, minSize)
+        print(selected)
+        square = selected[0]
+        joining = selected[1]
 
-        # too small
-        too_small: List[Square] = []
-        options: List[Square] = []
-        for possible in [up, right, down, left]:
-            # it must be in one of them
-            if possible not in unfilled_squares and possible not in mapped_squares:
-                continue
-
-            if possible in mapped_squares and mapped_squares[possible].size() < minSize:
-                too_small.append(possible)
-
-            options.append(possible)
-
-        # pick from the options
-        # if one of the adjacent is length less than the min, then we add it
-        if len(too_small) > 0:
-            to_join = random.sample(too_small, 1)[0]
+        shape = shape_mapping[joining]
+        if (shape is None):
+            # create a new shape with the two of them
+            new_shape = Shape([], [square, joining])
+            # add them to the shape mapping
+            shape_mapping[square] = new_shape
+            shape_mapping[joining] = new_shape
+            # reduce the options
+            del square_options[square]
+            del square_options[joining]
         else:
-            to_join = random.sample(options, 1)[0]
+            new_squares = shape.squares + [square]
+            new_squares.sort()
+            new_shape = Shape([], new_squares)
+            for s in shape.squares:
+                shape_mapping[s] = new_shape
+            shape_mapping[square] = new_shape
+            # reduce the options
+            del square_options[square]
 
-        if to_join in unfilled_squares:
-            del unfilled_squares[to_join]
-            new_shape_squares = [to_join, random_square]
-            new_shape_squares.sort()
-            new_shape = Shape([], new_shape_squares)
-            mapped_squares[to_join] = new_shape
-            mapped_squares[random_square] = new_shape
-        else:
-            shape = mapped_squares[to_join]
-            squares = shape.squares
-            squares.append(random_square)
-            squares.sort()
-            shape.squares = squares
-            mapped_squares[random_square] = shape
+        # Clean up the options
+        new_square_options: Dict[Square, List[Square]] = dict()
+        for square in square_options:
+            options = square_options[square]
+            new_options = []
+            for opt in options:
+                shape = shape_mapping[opt]
+                if shape is None:
+                    new_options.append(opt)
+                elif shape.size() < maxSize:
+                    new_options.append(opt)
+            new_square_options[square] = new_options
+        square_options = new_square_options
 
-        # TEMPORARILY print it out
-        # temp_print(mapped_squares)
-        # join it with a random adjacent cell
-
-    non_deduped_shapes = mapped_squares.values()
+    non_deduped_shapes = shape_mapping.values()
     shapes: List[Shape] = []
     for s in non_deduped_shapes:
         if s not in shapes:

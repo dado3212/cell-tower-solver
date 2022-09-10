@@ -91,12 +91,14 @@ empty_grid = Grid([
 # print()
 # print()
 
+pattern = buildShapePattern(8, 2, 4, 4)
+
 # Larger pattern
-pattern = buildShapePattern(25, 25, 5, 8)
-grid = build(pattern)
-grid.printBlank()
-print()
-grid.printShapes(pattern)
+# pattern = buildShapePattern(6, 10, 4, 4)
+# grid = build(pattern)
+# grid.printBlank()
+# print()
+# grid.printShapes(pattern)
 
 # solution_old = solve(old_grid)
 # old_grid.printShapes(solution_old)
