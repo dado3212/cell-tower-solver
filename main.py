@@ -91,7 +91,11 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern
 # print()
 # print()
 
-pattern = buildShapePattern(4, 1, 4, 4)
+# Very easy
+# pattern = buildShapePattern(4, 1, 4, 4)
+
+# pattern = buildShapePattern(8, 1, 4, 4)
+pattern = buildShapePattern(8, 4, 4, 4)
 
 # Larger pattern
 # pattern = buildShapePattern(6, 10, 4, 4)

@@ -52,7 +52,7 @@ class Grid:
 
     def getCharacter(this, row: int, col: int) -> str:
         if this.characters is None:
-            return ''
+            return ' '
         return this.characters[row][col]
 
     def getWord(this, shape: Shape) -> str:

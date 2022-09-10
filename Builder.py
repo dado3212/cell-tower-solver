@@ -1,6 +1,6 @@
 from Shape import Shape
 from typing import List, Dict, Optional, Tuple
-import random, math
+import random, math, copy
 from Grid import Grid
 from Solver import solve
 from Words import global_word_list
@@ -28,101 +28,6 @@ def buildShapePattern(width: int, height: int, minSize: int, maxSize: int) -> Li
                 is_valid = False
 
     return shapes
-
-def altExpansionCells(shape: Shape, width: int, height: int) -> List[Square]:
-    basic_squares = []
-    for square in shape.squares:
-        up = (square[0] - 1, square[1])
-        right = (square[0], square[1] + 1)
-        down = (square[0] + 1, square[1])
-        left = (square[0], square[1] - 1)
-        for possible in [up, right, down, left]:
-            if (possible not in basic_squares and squareIsValid(possible, width, height) and possible not in shape.squares):
-                basic_squares.append(possible)
-    # We should check some word validity here to prune bad options
-    return basic_squares
-
-# Do some fixing. Really we should just build
-# these correctly, but this is easier to wrap
-# my head around. Don't expect this code to be
-# long for this world
-def fix_pass(shapes: List[Shape], width: int, height: int, minSize: int, maxSize: int) -> List[Shape]:
-    # Get the number of shapes that are too small
-    need_adjustment = [s for s in shapes if s.size() < minSize] # or s.size() > maxSize]
-
-    # Check for the trivial case where we're good
-    if len(need_adjustment) == 0:
-        return shapes
-
-    # Solve the first one, do this recursively
-    to_fix = need_adjustment[0]
-
-    adjacent_squares = altExpansionCells(to_fix, width, height)
-
-    # x = [Shape([], [x]) for x in adjacent_squares]
-    # x.append(to_fix)
-    # temp_print(x, width, height)
-    # exit()
-
-    for adjacent_square in adjacent_squares:
-        shape = [s for s in shapes if adjacent_square in s.squares][0]
-        if shape.size() + to_fix.size() >= minSize and shape.size() + to_fix.size() <= maxSize:
-            new_squares = shape.squares + to_fix.squares
-            new_squares.sort()
-            new_shape = Shape([], new_squares)
-            new_shapes = [new_shape]
-            for s in shapes:
-                if s != to_fix and s != shape:
-                    new_shapes.append(s)
-            # exit()
-            return fix_pass(new_shapes, width, height, minSize, maxSize)
-
-    temp_print(shapes, width, height)
-    print("WHOA")
-    exit()
-    return shapes
-
-# [0, 1, 2, 3, 4, 5, 6, 7]
-
-# Tuple of the square that will be joined, and the square that it will join
-def select_square(square_options: Dict[Square, List[Square]], shape_mapping: Dict[Square, Optional[Shape]], minSize: int) -> Tuple[Square, Square]:
-    print(square_options)
-    # Check if any squares only have one option
-    second_choice = dict()
-    third_choice = dict()
-    fourth_choice = []
-    for square in square_options:
-        options = square_options[square]
-        if len(options) == 0:
-            print("Ah shit, what did I do")
-            exit()
-        if len(options) == 1:
-            return (square, options[0])
-        else:
-            # Check if it has shapes that are too small
-            for opt in options:
-                opt_shape = shape_mapping[opt]
-                if opt_shape is not None and opt_shape.size() < minSize:
-                    if opt_shape.size() in second_choice:
-                        second_choice[opt_shape.size()].append((square, opt))
-                    else:
-                        second_choice[opt_shape.size()] = [(square, opt)]
-                if opt_shape is not None:
-                    if opt_shape.size() in third_choice:
-                        third_choice[opt_shape.size()].append((square, opt))
-                    else:
-                        third_choice[opt_shape.size()] = [(square, opt)]
-                fourth_choice.append((square, opt))
-    # print(second_choice)
-    # print(third_choice)
-    # print(fourth_choice)
-    if len(second_choice) > 0:
-        # Pick the smallest group
-        return random.choice(second_choice[min(second_choice.keys())])
-    if len(third_choice) > 0:
-        # Try and pick the smallest again?
-        return random.choice(third_choice[min(third_choice.keys())])
-    return random.choice(fourth_choice)
 
 # Technically some of these grids will be valid, but not solvable.
 # It's easier to just proceed until you can't, and then backtrack
@@ -155,13 +60,6 @@ def is_valid(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
 
     return has_empty_squares or min_shape_size >= grid.minSize
 
-def randomEmptySquare(shape_mapping: Dict[Square, Optional[Shape]]) -> Square:
-    opts = []
-    for square in shape_mapping:
-        if shape_mapping[square] is None:
-            opts.append(square)
-    return random.choice(opts)
-
 def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
     for square in shape_mapping:
         shape = shape_mapping[square]
@@ -169,19 +67,44 @@ def is_done(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]]) -> bool:
             return False
         if shape.size() < grid.minSize or shape.size() > grid.maxSize:
             return False
+
+    # temporary printing
+    for square in shape_mapping:
+        shape = shape_mapping[square]
+        print(shape.size())
+
     return True
 
 def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shape, shape_mapping: Dict[Square, Optional[Shape]]):
+    # temporary printing for debugging
+    x = shapes[::]
+    x.append(currentShape)
+    temp_print(x, grid.width, grid.height)
+    print(len(shapes))
+
     if is_done(grid, shape_mapping):
+        print("Is done")
         shapes.append(currentShape)
         return shapes
     if not is_valid(grid, shape_mapping):
         return None
     if currentShape.size() == grid.maxSize:
         # Pick a new place to start from
-        print('pick a new place')
-        print(grid, shapes, currentShape.squares)
-        exit()
+        shapes = shapes[::]
+        shapes.append(currentShape)
+        new_spot_options = []
+        for square in shape_mapping:
+            if shape_mapping[square] is None:
+                new_spot_options.append(square)
+        random.shuffle(new_spot_options)
+        for spot in new_spot_options:
+            new_shape = Shape([], [spot])
+            new_shape_mapping = copy.deepcopy(shape_mapping)
+            new_shape_mapping[spot] = new_shape
+            result = buildShapePatternRecurse(grid, shapes, new_shape, new_shape_mapping)
+            if (result is not None):
+                return result
+        return None
     else:
         # all choices
         options = grid.getAdjacentShapeSquares(currentShape)
@@ -189,7 +112,7 @@ def buildShapePatternRecurse(grid: Grid, shapes: List[Shape], currentShape: Shap
         random.shuffle(options)
         for option in options:
             new_shape = Shape([], currentShape.squares + [option])
-            new_shape_mapping = shape_mapping
+            new_shape_mapping = copy.deepcopy(shape_mapping)
             for square in new_shape.squares:
                 new_shape_mapping[square] = new_shape
             result = buildShapePatternRecurse(grid, shapes, new_shape, new_shape_mapping)
@@ -219,73 +142,9 @@ def buildShapePatternHelper(width: int, height: int, minSize: int, maxSize: int)
 
     # track this with a stack, where you can push on a square, and also a "end of shape" choice
     a = buildShapePatternRecurse(grid, [], Shape([], [(0, 0)]), shape_mapping)
-    print(a)
-    return a
+    temp_print(a, width, height)
     exit()
-    chosen_squares = []
-    seed_square = randomEmptySquare(shape_mapping)
-    chosen_squares.append(seed_square)
-    lengthOfCurrentShape = 1
-    while (lengthOfCurrentShape < minSize):
-        print(chosen_squares[-1])
-        new_squares = grid.getAdjacentSquares(chosen_squares[-1])
-        print(new_squares)
-        exit()
-
-    # Proceed
-    while (True):
-        print("")
-        if len(square_options) == 0:
-            break
-        # Pick a square
-        selected = select_square(square_options, shape_mapping, minSize)
-        print(selected)
-        square = selected[0]
-        joining = selected[1]
-
-        shape = shape_mapping[joining]
-        if (shape is None):
-            # create a new shape with the two of them
-            new_shape = Shape([], [square, joining])
-            # add them to the shape mapping
-            shape_mapping[square] = new_shape
-            shape_mapping[joining] = new_shape
-            # reduce the options
-            del square_options[square]
-            del square_options[joining]
-        else:
-            new_squares = shape.squares + [square]
-            new_squares.sort()
-            new_shape = Shape([], new_squares)
-            for s in shape.squares:
-                shape_mapping[s] = new_shape
-            shape_mapping[square] = new_shape
-            # reduce the options
-            del square_options[square]
-
-        # Clean up the options
-        new_square_options: Dict[Square, List[Square]] = dict()
-        for square in square_options:
-            options = square_options[square]
-            new_options = []
-            for opt in options:
-                shape = shape_mapping[opt]
-                if shape is None:
-                    new_options.append(opt)
-                elif shape.size() < maxSize:
-                    new_options.append(opt)
-            new_square_options[square] = new_options
-        square_options = new_square_options
-
-    non_deduped_shapes = shape_mapping.values()
-    shapes: List[Shape] = []
-    for s in non_deduped_shapes:
-        if s not in shapes:
-            shapes.append(s)
-
-    temp_print(shapes, width, height)
-
-    return fix_pass(shapes, width, height, minSize, maxSize)
+    return a
 
 # There is a notion of how good a tiled pattern is. My general heuristic is that
 # larger chunks are better, and more curvy chunks are better.
