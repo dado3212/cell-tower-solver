@@ -4,7 +4,7 @@ from Shape import Shape
 from Types import Square
 from Types import Square
 
-def easyGrid(width: int, height: int, minSize: int, maxSize: int, characters: List[List[str]] = []):
+def easyGrid(width: int, height: int, minSize: int, maxSize: int, characters: List[str] = []):
     squares = []
     for r in range(height):
         for c in range(width):

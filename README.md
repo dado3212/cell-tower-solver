@@ -8,6 +8,8 @@ Wordlist downloaded from https://www.andrewt.net/puzzles/cell-tower/assets/words
 
 Color printing adapted from https://gist.github.com/iansan5653/c4a0b9f5c30d74258c5f132084b78db9.
 
+With a new word list, run `python helper.py` to recreate the pickle file.
+
 Run tests with `python3 tests.py`
 
 Speedups gotten from profiling with `python3 -m cProfile -s time main.py`

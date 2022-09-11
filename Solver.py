@@ -128,6 +128,8 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
 
     for square in grid.squares:
         valid_shapes = find_words_for_seed(grid, filtered_words, square)
+        print(square)
+        print(len(valid_shapes))
         for shape in valid_shapes:
             for sq in shape.squares:
                 square_mapping[sq].append(shape)
