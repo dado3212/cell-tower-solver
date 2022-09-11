@@ -93,17 +93,17 @@ class Grid:
             character_mapping[this.squares[i]] = characters[i]
         this.characterMapping = character_mapping
 
-    def getCharacter(this, row: int, col: int) -> str:
+    def getCharacter(this, square: Square) -> str:
         if this.characterMapping is None:
             return ' '
-        return this.characterMapping[(row, col)]
+        return this.characterMapping[square]
 
     def getWord(this, shape: Shape) -> str:
         if this.characterMapping is None:
             raise ValueError('No characters are set, a word has no meaning')
         word = ""
         for square in shape.squares:
-            word += this.getCharacter(square[0], square[1])
+            word += this.getCharacter(square)
         return word
 
     def printBlank(this) -> None:
@@ -118,7 +118,7 @@ class Grid:
                 if (r, c) not in this.squares:
                     row += '   '
                 else:
-                    row += ' ' + this.getCharacter(r, c).upper() + ' '
+                    row += ' ' + this.getCharacter((r, c)).upper() + ' '
             print(row)
 
     def printShapes(this, shapes: List[Shape]) -> None:
@@ -140,7 +140,7 @@ class Grid:
                     found_cell = False
                     for shape in shapes:
                         if (r, c) in shape.squares:
-                            row += printColor(shape.getColor(), this.getCharacter(r, c))
+                            row += printColor(shape.getColor(), this.getCharacter((r, c)))
                             found_cell = True
                             break
                     if not found_cell:

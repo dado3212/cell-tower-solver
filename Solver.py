@@ -24,29 +24,32 @@ def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> 
     for square in shape.squares:
         # Start it off
         if last_square is None:
-            chunk = grid.getCharacter(square[0], square[1])
+            chunk = grid.getCharacter(square)
         elif last_square[0] == square[0] and last_square[1] + 1 == square[1]:
-            chunk += grid.getCharacter(square[0], square[1])
+            chunk += grid.getCharacter(square)
         else:
             continuous_chunks.append(chunk)
-            chunk = grid.getCharacter(square[0], square[1])
+            chunk = grid.getCharacter(square)
         last_square = square
     continuous_chunks.append(chunk)
     filtered_potential_words = []
-    print(potential_words)
-    print(continuous_chunks)
+    # print(potential_words)
+    # print(continuous_chunks)
     for word in potential_words:
         if chunk_matches_word(word, continuous_chunks):
             filtered_potential_words.append(word)
-    print(filtered_potential_words)
-    print("")
+    # print(filtered_potential_words)
+    # print("")
     return filtered_potential_words
 
 def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
+    if (len(shape.potential_words) == 1):
+        if grid.getWord(shape) == shape.potential_words[0]:
+            return []
     cells = getExpansionCells(grid, shape)
     shapes = []
     for cell in cells:
-        squares = [x for x in shape.squares]
+        squares = shape.squares[::]
         squares.append(cell)
         squares.sort()
         new_shape = Shape(squares)
@@ -85,7 +88,7 @@ def has_solution(sm: Dict[str, List[Shape]]) -> bool:
     return True
 
 def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> List[Shape]:
-    start = grid.getCharacter(seed[0], seed[1])
+    start = grid.getCharacter(seed)
     xword = []
     for word in filtered_words:
         if word[0] == start:
