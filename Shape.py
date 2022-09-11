@@ -1,6 +1,7 @@
 from Types import Square, Color
 from typing import List
 from Colors import printColor
+import uuid
 
 class Shape:
     # Squares is a list of points in lexical order
@@ -41,7 +42,7 @@ class Shape:
         if (square[0] == this.squares[0][0] and square[1] < this.squares[0][1]):
             return False
         # Can't already be part of the shape
-        if (square in this.squares):
+        if square in this.squares:
             return False
         return True
 

@@ -5,15 +5,12 @@ from Grid import Grid
 from typing import List, Dict, Optional
 
 def getExpansionCells(grid: Grid, shape: Shape) -> List[Square]:
-    basic_squares = []
-    for square in grid.getAdjacentShapeSquares(shape):
-        if shape.cellIsClaimable(square):
-            basic_squares.append(square)
-    # We should check some word validity here to prune bad options
-    return basic_squares
+    # could we check some word validity here?
+    return [square for square in grid.getAdjacentShapeSquares(shape) if shape.cellIsClaimable(square)]
 
 def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> List[str]:
-    if len(shape.squares) == grid.maxSize:
+    square_count = len(shape.squares)
+    if square_count == grid.maxSize:
         word = grid.getWord(shape)
         if is_valid_word(word):
             return [word]
@@ -35,7 +32,7 @@ def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> 
     # print(potential_words)
     # print(continuous_chunks)
     if len(continuous_chunks) == 1:
-        filtered_potential_words = [word for word in potential_words if continuous_chunks[0] in word]
+        filtered_potential_words = [word for word in potential_words if word[0:square_count] == continuous_chunks[0]]
     else:
         filtered_potential_words = []
         for word in potential_words:
@@ -49,6 +46,7 @@ def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
     if (len(shape.potential_words) == 1):
         if grid.getWord(shape) == shape.potential_words[0]:
             return []
+
     cells = getExpansionCells(grid, shape)
     shapes = []
     for cell in cells:
@@ -91,7 +89,6 @@ def has_solution(sm: Dict[str, List[Shape]]) -> bool:
     return True
 
 def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> List[Shape]:
-    start = grid.getCharacter(seed)
     seed = Shape([seed])
     seed.potential_words = filtered_words
     shapes = [seed]
@@ -101,7 +98,8 @@ def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> 
         for shape in shapes:
             new_shapes = getExpandedShapes(grid, shape)
             x = x + new_shapes
-        shapes = list(set(x))
+        x = list(set(x))
+        shapes = x
         if (i >= grid.minSize - 2):
             all_shapes += x
     valid_shapes = []
