@@ -1,27 +1,19 @@
 from Shape import Shape
-from Words import global_word_list, max_length, is_valid_word, chunk_matches_word
+from Words import global_word_list, is_valid_word, chunk_matches_word
 from Types import Square
 from Grid import Grid
 from typing import List, Dict, Optional
 
-def getKey(square: Square) -> str:
-    return str(square[0]) + '-' + str(square[1])
-
 def getExpansionCells(grid: Grid, shape: Shape) -> List[Square]:
     basic_squares = []
-    for square in shape.squares:
-        up = (square[0] - 1, square[1])
-        right = (square[0], square[1] + 1)
-        down = (square[0] + 1, square[1])
-        left = (square[0], square[1] - 1)
-        for possible in [up, right, down, left]:
-            if (possible not in basic_squares and possible in grid.squares and shape.cellIsClaimable(possible)):
-                basic_squares.append(possible)
+    for square in grid.getAdjacentShapeSquares(shape):
+        if shape.cellIsClaimable(square):
+            basic_squares.append(square)
     # We should check some word validity here to prune bad options
     return basic_squares
 
 def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
-    if len(shape.squares) == max_length:
+    if len(shape.squares) == grid.maxSize:
         return is_valid_word(grid.getWord(shape))
     continuous_chunks: List[str] = []
     last_square = None
@@ -58,25 +50,23 @@ def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
 # Try and deconstruct
 # If any square is only reached by one cell, then it has to take that.
 # Hopefully, that's sufficinet
-def unique_square(sm: Dict[str, List[Shape]]) -> Optional[Shape]:
+def unique_square(sm: Dict[Square, List[Shape]]) -> Optional[Shape]:
     for key in sm:
         if len(sm[key]) == 1:
             return sm[key][0]
     return None
 
-def remove_shape_from_map(sm: Dict[str, List[Shape]], shape_to_remove: Shape) -> None:
+def remove_shape_from_map(sm: Dict[Square, List[Shape]], shape_to_remove: Shape) -> None:
     for square_to_clear in shape_to_remove.squares:
-        key_to_filter = getKey(square_to_clear)
-        sm[key_to_filter] = [x for x in sm[key_to_filter] if x != shape_to_remove]
+        sm[square_to_clear] = [x for x in sm[square_to_clear] if x != shape_to_remove]
 
-def reduced_map(sm_orig: Dict[str, List[Shape]], shape: Shape) -> Dict[str, List[Shape]]:
+def reduced_map(sm_orig: Dict[Square, List[Shape]], shape: Shape) -> Dict[Square, List[Shape]]:
     sm = sm_orig.copy()
     for square in shape.squares:
-        filled_key = getKey(square)
-        shapes_to_remove = sm[filled_key]
+        shapes_to_remove = sm[square]
         for shape_to_remove in shapes_to_remove:
             remove_shape_from_map(sm, shape_to_remove)
-        del sm[filled_key]
+        del sm[square]
     return sm
 
 def has_solution(sm: Dict[str, List[Shape]]) -> bool:
@@ -91,13 +81,13 @@ def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
     seed = Shape(xword, [seed])
     shapes = [seed]
     all_shapes = []
-    for i in range(0, 7):
+    for i in range(0, grid.maxSize):
         x = []
         for shape in shapes:
             new_shapes = getExpandedShapes(grid, shape)
             x = x + new_shapes
         shapes = x
-        if (i >= 2):
+        if (i >= grid.minSize - 2):
             all_shapes += x
     valid_shapes = []
     for shape in all_shapes:
@@ -107,18 +97,15 @@ def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
     return valid_shapes
 
 def solve(grid: Grid) -> Optional[List[Shape]]:
-    square_mapping: Dict[str, List[Shape]] = {}
+    square_mapping: Dict[Square, List[Shape]] = {}
     for square in grid.squares:
-        key = getKey(square)
-        square_mapping[key] = []
+        square_mapping[square] = []
 
     for square in grid.squares:
-        key = getKey(square)
         valid_shapes = find_words_for_seed(grid, square)
         for shape in valid_shapes:
-            for square in shape.squares:
-                key = getKey(square)
-                square_mapping[key].append(shape)
+            for sq in shape.squares:
+                square_mapping[sq].append(shape)
 
     # Dedupe step (there's a way to do this higher in the stack but I can't think right now)
     for key in square_mapping:
@@ -147,5 +134,12 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
     if len(square_mapping) == 0:
         return solution
     else:
+        # Temp debugging
+        # for k in square_mapping:
+        #     print(k)
+        #     for s in square_mapping[k]:
+        #         print(grid.getWord(s))
+        # print(solution)
+
         # Failed to find a solution
         return None

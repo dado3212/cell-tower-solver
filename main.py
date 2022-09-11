@@ -113,6 +113,15 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 # grid.printShapes(pattern)
 # exit()
 
+grid = triangleGrid(16, 16)
+characters = []
+grid.setCharacters(['h','a','l','e','m','a','t','r','b','o','a','s','g','d','c','c','t','a','s','a','s','c','s','s','g','a','h','g','o','n','p','f','l','b','a','s','t','u','b','l','l','u','w','h','a','s','t','a','i','z','z','k','s','d','c','g','l','k','t','l','t','e','p','a','p','z','l','o','h','a','a','z','s','a','s','r','a','l','w','r','t','p','e','h','n','g','u','f','c','e','v','y','d','e','a','o','s','a','t','p','f','k','g','a','p','u','e','d','n','s','t','t','y','a','c','e','s','t','e','d','k','s','m','a','r','e','r','i','m','e','r','e','e','y','e','s'])
+grid.printBlank()
+shapes = solve(grid)
+# print(shapes)
+grid.printShapes(shapes)
+exit()
+
 # Very easy
 #
 # Above (22, 22, 4, 8) we start hitting recursion depth problems
