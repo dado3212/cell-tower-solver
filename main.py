@@ -28,13 +28,11 @@ from Words import global_word_list
 # exit()
 
 # Custom #1
-exit()
 grid = easyGrid(14, 14, 4, 8, ['h','a','h','e','s','c','h','a','p','s','i','l','s','c','w','k','i','t','t','n','s','o','o','r','k','o','i','m','i','a','n','t','e','f','n','r','y','e','a','i','t','w','s','h','a','n','o','l','s','e','v','e','l','a','r','e','v','i','r','m','r','o','o','r','e','a','i','g','e','p','s','f','l','o','s','d','e','m','i','r','s','n','p','o','c','i','l','a','o','t','i','o','b','h','o','r','t','i','e','l','b','d','d','c','o','n','s','w','f','r','c','o','r','a','b','s','i','t','z','e','r','v','a','e','c','y','a','u','s','h','t','w','a','c','e','u','v','i','c','l','l','k','j','a','t','o','w','l','r','w','s','t','e','s','s','o','o','h','s','a','b','s','h','i','s','s','u','n','o','t','t','o','t','l','e','r','k','s','a','s','a','l','h','e','s','f','o','o','t','s','l','s','o','t','e','d'])
-exit()
 grid.printBlank()
-# shapes = solve(grid)
-# grid.printShapes(shapes)
-# exit()
+shapes = solve(grid)
+grid.printShapes(shapes)
+exit()
 
 filtered_words = []
 for word in global_word_list:
@@ -43,7 +41,9 @@ for word in global_word_list:
         filtered_words.append(word)
 
 # for square in grid.squares:
-valid_shapes = find_words_for_seed(grid, filtered_words, (13, 13))
+# valid_shapes = find_words_for_seed(grid, filtered_words, (12, 6))
+valid_shapes = find_words_for_seed(grid, filtered_words, (0, 0))
+# valid_shapes = find_words_for_seed(grid, filtered_words, (0, 6))
 # print(square)
 print(len(valid_shapes))
 

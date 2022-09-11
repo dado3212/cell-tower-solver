@@ -105,7 +105,7 @@ def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> 
         for shape in shapes:
             new_shapes = getExpandedShapes(grid, shape)
             x = x + new_shapes
-        shapes = x
+        shapes = list(set(x))
         if (i >= grid.minSize - 2):
             all_shapes += x
     valid_shapes = []
@@ -128,8 +128,8 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
 
     for square in grid.squares:
         valid_shapes = find_words_for_seed(grid, filtered_words, square)
-        print(square)
-        print(len(valid_shapes))
+        # print(square)
+        # print(len(valid_shapes))
         for shape in valid_shapes:
             for sq in shape.squares:
                 square_mapping[sq].append(shape)
