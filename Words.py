@@ -28,10 +28,8 @@ def chunk_matches_word(word: str, chunks: List[str]) -> bool:
         last_index = i + len(chunk)
     return True
 
-# download valid wordlist used by the site
-# https://www.andrewt.net/puzzles/cell-tower/assets/words.json
-with open('words.json') as f:
-    global_word_list: List[str] = json.load(f)
-
-with open('word_trie.pickle', 'rb') as handle:
+with open('ct_trie.pickle', 'rb') as handle:
     trie = pickle.load(handle)
+
+with open('ct_words.pickle', 'rb') as handle:
+    global_word_list = pickle.load(handle)
