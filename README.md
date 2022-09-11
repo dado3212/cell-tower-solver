@@ -1,7 +1,7 @@
 # cell-tower-solver
 Exploration of a generator and solver for https://www.andrewt.net/puzzles/cell-tower/
 
-Sample solved grid:  
+Sample solved grid:
 <img src="sc.png" >
 
 Wordlist downloaded from https://www.andrewt.net/puzzles/cell-tower/assets/words.json as of June 6, 2022.
@@ -14,4 +14,4 @@ Speedups gotten from profiling with `python3 -m cProfile -s time main.py`
 
 Current speeds:
 * 1.005 for #??
-* 1.411 for #86
+* 1.298 for #86

@@ -33,6 +33,12 @@ from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buil
 #     ['n','s','r','a','l','l','u'],
 #     ['k','p','o','u','n','d','m']
 # ]
+grid = easyGrid(7, 12, 4, 8)
+grid.setCharacters(['n','e','i','p','r','o','g','a','t','h','e','r','e','o','g','r','a','b','s','s','p','e','s','l','u','p','t','i','i','d','e','s','e','b','o','e','n','p','e','t','e','n','t','i','f','r','i','t','s','y','m','e','o','d','t','e','l','a','n','o','v','r','a','i','i','n','g','e','l','b','n','s','r','a','l','l','u','k','p','o','u','n','d','m'])
+grid.printBlank()
+shapes = solve(grid)
+grid.printShapes(shapes)
+exit()
 
 # # 87
 # old_grid = Grid([
