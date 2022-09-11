@@ -32,12 +32,15 @@ def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> 
             chunk = grid.getCharacter(square)
         last_square = square
     continuous_chunks.append(chunk)
-    filtered_potential_words = []
     # print(potential_words)
     # print(continuous_chunks)
-    for word in potential_words:
-        if chunk_matches_word(word, continuous_chunks):
-            filtered_potential_words.append(word)
+    if len(continuous_chunks) == 1:
+        filtered_potential_words = [word for word in potential_words if continuous_chunks[0] in word]
+    else:
+        filtered_potential_words = []
+        for word in potential_words:
+            if chunk_matches_word(word, continuous_chunks):
+                filtered_potential_words.append(word)
     # print(filtered_potential_words)
     # print("")
     return filtered_potential_words

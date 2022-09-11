@@ -22,17 +22,18 @@ def is_valid_word(word: str) -> bool:
 
 def chunk_matches_word(word: str, chunks: List[str]) -> bool:
     last_index = -1
-    is_valid = True
+    for chunk in chunks:
+        if chunk not in word:
+            return False
     for chunk in chunks:
         if (last_index == -1):
             i = word.find(chunk)
         else:
             i = word.find(chunk, last_index)
         if i == -1 or last_index == -1 and i > 0:
-            is_valid = False
-            break
+            return False
         last_index = i + len(chunk)
-    return is_valid
+    return True
 
 # download valid wordlist used by the site
 # https://www.andrewt.net/puzzles/cell-tower/assets/words.json
