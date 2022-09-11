@@ -33,13 +33,13 @@ def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> 
         last_square = square
     continuous_chunks.append(chunk)
     filtered_potential_words = []
-    # print(potential_words)
-    # print(continuous_chunks)
+    print(potential_words)
+    print(continuous_chunks)
     for word in potential_words:
         if chunk_matches_word(word, continuous_chunks):
             filtered_potential_words.append(word)
-    # print(filtered_potential_words)
-    # print("")
+    print(filtered_potential_words)
+    print("")
     return filtered_potential_words
 
 def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
