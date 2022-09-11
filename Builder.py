@@ -86,7 +86,7 @@ def total_empty_shapes(grid: Grid, shape_mapping: Dict[Square, Optional[Shape]])
                 squares[shapeCount].append(square)
             else:
                 squares[shapeCount] = [square]
-    shapes = [Shape([], squares[x]) for x in squares]
+    shapes = [Shape(squares[x]) for x in squares]
 
     return sorted(shapes, key=lambda s: s.size())
 
@@ -117,7 +117,7 @@ def buildShapePatternCut(grid: Grid, shapes: List[Shape], currentShape: Shape, s
         new_shape_mapping = dict()
         for square in new_grid.squares:
             new_shape_mapping[square] = None
-        answer = buildShapePatternRecurse(new_grid, [], Shape([], [new_grid.squares[0]]), new_shape_mapping)
+        answer = buildShapePatternRecurse(new_grid, [], Shape([new_grid.squares[0]]), new_shape_mapping)
         if answer is None:
             return None
         else:
@@ -132,7 +132,7 @@ def buildShapePatternGrow(grid: Grid, shapes: List[Shape], currentShape: Shape, 
     options = [opt for opt in options if shape_mapping[opt] is None]
     random.shuffle(options)
     for option in options:
-        new_shape = Shape([], currentShape.squares + [option])
+        new_shape = Shape(currentShape.squares + [option])
         new_shape_mapping = shape_mapping.copy()
         for square in new_shape.squares:
             new_shape_mapping[square] = new_shape
@@ -172,12 +172,12 @@ def buildShapePatternHelper(grid: Grid) -> List[Shape]:
     for square in grid.squares:
         shape_mapping[square] = None
 
-    shapes = buildShapePatternRecurse(grid, [], Shape([], [grid.squares[0]]), shape_mapping)
+    shapes = buildShapePatternRecurse(grid, [], Shape([grid.squares[0]]), shape_mapping)
     sorted_shapes = []
     for shape in shapes:
         squares = shape.squares
         squares.sort()
-        sorted_shapes.append(Shape([], squares))
+        sorted_shapes.append(Shape(squares))
 
     return sorted_shapes
 

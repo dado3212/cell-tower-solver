@@ -20,11 +20,11 @@ class WordTest(unittest.TestCase):
 class ShapeTest(unittest.TestCase):
 
     def test_shape_size(self):
-        shape = Shape([], [(0, 0), (0, 1), (1, 0), (1, 1), (1, 2)])
+        shape = Shape([(0, 0), (0, 1), (1, 0), (1, 1), (1, 2)])
         self.assertEqual(shape.size(), 5)
         self.assertEqual(shape.numSides(), 6)
 
-        shape2 = Shape([], [(0, 3), (1, 1), (1, 2), (1, 3), (1, 4), (2, 0), (2, 1), (2, 2), (2, 3)])
+        shape2 = Shape([(0, 3), (1, 1), (1, 2), (1, 3), (1, 4), (2, 0), (2, 1), (2, 2), (2, 3)])
         self.assertEqual(shape2.size(), 9)
         self.assertEqual(shape2.numSides(), 12)
 

@@ -12,9 +12,13 @@ def getExpansionCells(grid: Grid, shape: Shape) -> List[Square]:
     # We should check some word validity here to prune bad options
     return basic_squares
 
-def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
+def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> List[str]:
     if len(shape.squares) == grid.maxSize:
-        return is_valid_word(grid.getWord(shape))
+        word = grid.getWord(shape)
+        if is_valid_word(word):
+            return [word]
+        else:
+            return []
     continuous_chunks: List[str] = []
     last_square = None
     for square in shape.squares:
@@ -29,11 +33,14 @@ def couldExpandToWord(grid: Grid, shape: Shape) -> bool:
         last_square = square
     continuous_chunks.append(chunk)
     filtered_potential_words = []
-    for word in shape.potential_words:
+    # print(potential_words)
+    # print(continuous_chunks)
+    for word in potential_words:
         if chunk_matches_word(word, continuous_chunks):
             filtered_potential_words.append(word)
-    shape.potential_words = filtered_potential_words
-    return len(filtered_potential_words) > 0
+    # print(filtered_potential_words)
+    # print("")
+    return filtered_potential_words
 
 def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
     cells = getExpansionCells(grid, shape)
@@ -42,8 +49,10 @@ def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
         squares = [x for x in shape.squares]
         squares.append(cell)
         squares.sort()
-        new_shape = Shape(shape.potential_words, squares)
-        if couldExpandToWord(grid, new_shape):
+        new_shape = Shape(squares)
+        valid_expanded_words = validExpandedWords(grid, shape.potential_words, new_shape)
+        if len(valid_expanded_words) > 0:
+            new_shape.potential_words = valid_expanded_words
             shapes.append(new_shape)
     return shapes
 
@@ -75,13 +84,17 @@ def has_solution(sm: Dict[str, List[Shape]]) -> bool:
             return False
     return True
 
-def find_words_for_seed(grid: Grid, seed: Square) -> List[Shape]:
+def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> List[Shape]:
     start = grid.getCharacter(seed[0], seed[1])
-    xword = [x for x in global_word_list if x[0] == start]
-    seed = Shape(xword, [seed])
+    xword = []
+    for word in filtered_words:
+        if word[0] == start:
+            xword.append(word)
+    seed = Shape([seed])
+    seed.potential_words = xword
     shapes = [seed]
     all_shapes = []
-    for i in range(0, grid.maxSize):
+    for i in range(0, grid.maxSize - 1):
         x = []
         for shape in shapes:
             new_shapes = getExpandedShapes(grid, shape)
@@ -101,8 +114,14 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
     for square in grid.squares:
         square_mapping[square] = []
 
+    filtered_words = []
+    for word in global_word_list:
+        word_len = len(word)
+        if word_len >= grid.minSize and word_len <= grid.maxSize:
+            filtered_words.append(word)
+
     for square in grid.squares:
-        valid_shapes = find_words_for_seed(grid, square)
+        valid_shapes = find_words_for_seed(grid, filtered_words, square)
         for shape in valid_shapes:
             for sq in shape.squares:
                 square_mapping[sq].append(shape)

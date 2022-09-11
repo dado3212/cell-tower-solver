@@ -4,8 +4,7 @@ from Colors import printColor
 
 class Shape:
     # Squares is a list of points in lexical order
-    def __init__(this, potential_words: List[str], squares: List[Square]):
-        this.potential_words = potential_words
+    def __init__(this, squares: List[Square]):
         this.squares = squares
         # Do this non-optimistically
         this.max_col = None
