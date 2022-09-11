@@ -9,7 +9,7 @@ Alternative wordlists downloaded from https://www.keithv.com/software/wlist/.
 
 Color printing adapted from https://gist.github.com/iansan5653/c4a0b9f5c30d74258c5f132084b78db9.
 
-With a new word list, run `python helper.py` to recreate the pickle file.
+With a new word list, run `cd dictionaries; python3 helper.py` to recreate the pickle file.
 
 Run tests with `python3 tests.py`
 

@@ -28,8 +28,9 @@ def chunk_matches_word(word: str, chunks: List[str]) -> bool:
         last_index = i + len(chunk)
     return True
 
-with open('ct_trie.pickle', 'rb') as handle:
+with open('dictionaries/w12_trie.pickle', 'rb') as handle:
     trie = pickle.load(handle)
 
-with open('ct_words.pickle', 'rb') as handle:
+with open('dictionaries/w12_words.pickle', 'rb') as handle:
     global_word_list = pickle.load(handle)
+    print(global_word_list)
