@@ -92,12 +92,8 @@ def has_solution(sm: Dict[str, List[Shape]]) -> bool:
 
 def find_words_for_seed(grid: Grid, filtered_words: List[str], seed: Square) -> List[Shape]:
     start = grid.getCharacter(seed)
-    xword = []
-    for word in filtered_words:
-        if word[0] == start:
-            xword.append(word)
     seed = Shape([seed])
-    seed.potential_words = xword
+    seed.potential_words = filtered_words
     shapes = [seed]
     all_shapes = []
     for i in range(0, grid.maxSize - 1):
@@ -126,8 +122,12 @@ def solve(grid: Grid) -> Optional[List[Shape]]:
         if word_len >= grid.minSize and word_len <= grid.maxSize:
             filtered_words.append(word)
 
+    char_map: Dict[str, List[str]] = dict()
+    for char in set(grid.characterMapping.values()):
+        char_map[char] = [word for word in filtered_words if word[0] == char]
+
     for square in grid.squares:
-        valid_shapes = find_words_for_seed(grid, filtered_words, square)
+        valid_shapes = find_words_for_seed(grid, char_map[grid.getCharacter(square)], square)
         # print(square)
         # print(len(valid_shapes))
         for shape in valid_shapes:
