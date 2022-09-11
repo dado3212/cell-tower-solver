@@ -43,11 +43,24 @@ def validExpandedWords(grid: Grid, potential_words: List[str], shape: Shape) -> 
     return filtered_potential_words
 
 def getExpandedShapes(grid: Grid, shape: Shape) -> List[Shape]:
-    if (len(shape.potential_words) == 1):
-        if grid.getWord(shape) == shape.potential_words[0]:
-            return []
-
     cells = getExpansionCells(grid, shape)
+    # This can help, but only if the list of words is sufficiently small.
+    # Otherwise we spend a lot of time building necessary_letters but it
+    # doesn't cut down that many cells.
+    if len(shape.potential_words) <= 5:
+        necessary_letters = dict()
+        for word in shape.potential_words:
+            for letter in word:
+                if letter in necessary_letters:
+                    necessary_letters[letter] += 1
+                else:
+                    necessary_letters[letter] = 1
+        for letter in grid.getWord(shape):
+            necessary_letters[letter] -= 1
+        necessary_letters = {k:v for (k, v) in necessary_letters.items() if v > 0}
+        prev = len(cells)
+        cells = [cell for cell in cells if grid.getCharacter(cell) in necessary_letters]
+        new = len(cells)
     shapes = []
     for cell in cells:
         squares = shape.squares[::]

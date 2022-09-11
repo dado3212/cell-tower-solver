@@ -1,6 +1,6 @@
 from Solver import solve, find_words_for_seed
 from Grid import Grid, easyGrid, circleGrid, triangleGrid
-from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buildShapePatternHelper
+from Builder import build, buildGrid, shapeEccentricity, buildShapePattern, buildShapePatternHelper, createUniqueFromEmptyGrid
 from Words import global_word_list
 
 # ??
@@ -28,26 +28,11 @@ from Words import global_word_list
 # exit()
 
 # Custom #1
-grid = easyGrid(14, 14, 4, 8, ['h','a','h','e','s','c','h','a','p','s','i','l','s','c','w','k','i','t','t','n','s','o','o','r','k','o','i','m','i','a','n','t','e','f','n','r','y','e','a','i','t','w','s','h','a','n','o','l','s','e','v','e','l','a','r','e','v','i','r','m','r','o','o','r','e','a','i','g','e','p','s','f','l','o','s','d','e','m','i','r','s','n','p','o','c','i','l','a','o','t','i','o','b','h','o','r','t','i','e','l','b','d','d','c','o','n','s','w','f','r','c','o','r','a','b','s','i','t','z','e','r','v','a','e','c','y','a','u','s','h','t','w','a','c','e','u','v','i','c','l','l','k','j','a','t','o','w','l','r','w','s','t','e','s','s','o','o','h','s','a','b','s','h','i','s','s','u','n','o','t','t','o','t','l','e','r','k','s','a','s','a','l','h','e','s','f','o','o','t','s','l','s','o','t','e','d'])
-grid.printBlank()
-shapes = solve(grid)
-grid.printShapes(shapes)
-exit()
-
-filtered_words = []
-for word in global_word_list:
-    word_len = len(word)
-    if word_len >= grid.minSize and word_len <= grid.maxSize:
-        filtered_words.append(word)
-
-# for square in grid.squares:
-# valid_shapes = find_words_for_seed(grid, filtered_words, (12, 6))
-valid_shapes = find_words_for_seed(grid, filtered_words, (0, 0))
-# valid_shapes = find_words_for_seed(grid, filtered_words, (0, 6))
-# print(square)
-print(len(valid_shapes))
-
-exit()
+# grid = easyGrid(14, 14, 4, 8, ['h','a','h','e','s','c','h','a','p','s','i','l','s','c','w','k','i','t','t','n','s','o','o','r','k','o','i','m','i','a','n','t','e','f','n','r','y','e','a','i','t','w','s','h','a','n','o','l','s','e','v','e','l','a','r','e','v','i','r','m','r','o','o','r','e','a','i','g','e','p','s','f','l','o','s','d','e','m','i','r','s','n','p','o','c','i','l','a','o','t','i','o','b','h','o','r','t','i','e','l','b','d','d','c','o','n','s','w','f','r','c','o','r','a','b','s','i','t','z','e','r','v','a','e','c','y','a','u','s','h','t','w','a','c','e','u','v','i','c','l','l','k','j','a','t','o','w','l','r','w','s','t','e','s','s','o','o','h','s','a','b','s','h','i','s','s','u','n','o','t','t','o','t','l','e','r','k','s','a','s','a','l','h','e','s','f','o','o','t','s','l','s','o','t','e','d'])
+# grid.printBlank()
+# shapes = solve(grid)
+# grid.printShapes(shapes)
+# exit()
 
 # # 87
 # old_grid = Grid([
@@ -137,19 +122,15 @@ exit()
 
 # Very easy
 #
-# Above (22, 22, 4, 8) we start hitting recursion depth problems
+# Above 22x22 we start hitting recursion depth problems
 # when building the pattern.
-pattern_grid = easyGrid(14, 14, 4, 8)
-pattern = buildShapePatternHelper(pattern_grid)
-characters = []
-for i in range(len(pattern_grid.squares)):
-    characters.append('-')
-pattern_grid.setCharacters(characters)
-pattern_grid.printShapes(pattern)
-
-grid = build(pattern, True)
-print()
-grid.printShapes(pattern)
+# When doing >20x20 grids, (4, 8) struggles to find unique
+# setups, likely due to the 4/8 relative primality
+empty_grid = easyGrid(20, 20, 8, 8)
+grid, shapes = createUniqueFromEmptyGrid(empty_grid)
+grid.printBlank()
+grid.printShapes(shapes)
+exit()
 
 # pattern_grid = easyGrid(8, 10, 5, 5)
 # pattern = buildShapePattern(pattern_grid)

@@ -7,6 +7,24 @@ from Solver import solve
 from Words import global_word_list
 from Types import Square
 
+def createUniqueFromEmptyGrid(grid: Grid) -> Tuple[Grid, List[Shape]]:
+    if not is_number_composable(len(grid.squares), grid.minSize, grid.maxSize):
+        raise ValueError('You cannot build a grid of size %d with blocks sized between %d and %d', len(this.squares), minSize, maxSize)
+
+    shapes: List[Shape] = []
+    is_valid = False
+    while not is_valid:
+        shapes = buildShapePatternHelper(grid)
+        grid.printShapes(shapes)
+        is_valid = True
+        built_grid = build(shapes, True)
+        if built_grid is None:
+            print("No grid")
+            is_valid = False
+    print(built_grid)
+
+    return (built_grid, shapes)
+
 # Given the dimensions of a grid, and the possible tile sizes, this will attempt
 # to return a set of Shapes that fully cover the grid
 def buildShapePattern(grid: Grid) -> List[Shape]:
@@ -19,15 +37,10 @@ def buildShapePattern(grid: Grid) -> List[Shape]:
         shapes = buildShapePatternHelper(grid)
         grid.printShapes(shapes)
         is_valid = True
-        for x in shapes:
-            if x.size() < grid.minSize or x.size() > grid.maxSize:
-                print("Wrong sizing")
-                is_valid = False
-        if is_valid:
-            built_grid = build(shapes, True)
-            if built_grid is None:
-                print("No grid")
-                is_valid = False
+        built_grid = build(shapes, True)
+        if built_grid is None:
+            print("No grid")
+            is_valid = False
 
     return shapes
 
@@ -248,7 +261,7 @@ def getPossibleWords(shapes: List[Shape]) -> List[str]:
 # tends to work pretty well.
 def build(shapes: List[Shape], debug: bool = False) -> Optional[Grid]:
     # For now, just assume the list of shapes is well formed
-    num_wordlists = 3
+    num_wordlists = 5
     for i in range(num_wordlists):
         words = getPossibleWords(shapes)
         if debug:
@@ -258,7 +271,7 @@ def build(shapes: List[Shape], debug: bool = False) -> Optional[Grid]:
             mapping[word] = [shape for shape in shapes if len(word) == shape.size()]
 
         # The number of attempts with a given wordlist before we should just regenerate
-        num_attempts = 5
+        num_attempts = 10
         for i in range(num_attempts):
             new_mapping: Dict[Shape, str] = dict()
             for word in mapping:

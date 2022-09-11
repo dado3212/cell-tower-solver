@@ -12,10 +12,12 @@ def is_valid_word(word: str) -> bool:
     return _end in current_dict
 
 def chunk_matches_word(word: str, chunks: List[str]) -> bool:
-    last_index = -1
+    # Quick and fast pass which filters a lot of options
     for chunk in chunks:
         if chunk not in word:
             return False
+    # Acutally make sure the pieces fit
+    last_index = -1
     for chunk in chunks:
         if (last_index == -1):
             i = word.find(chunk)
