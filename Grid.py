@@ -132,8 +132,13 @@ class Grid:
         # 10 - yellow
         # 21 - red
         # Set colors
-        color_set = [21, 5, 10, 6, 1, 2, 14, 9]
-        color_mapping: Dict[Shape, int] = dict()
+
+        # Build the adjacency map
+        # Build the degree map
+        adjacency_original: Dict[Shape, List[Shape]] = dict()
+        adjacency: Dict[Shape, List[Shape]] = dict()
+        # color_set = [21, 5, 10, 6, 1, 2, 14, 9]
+        # color_mapping: Dict[Shape, int] = dict()
         square_mapping: Dict[Square, Shape] = dict()
         for shape in shapes:
             for square in shape.squares:
@@ -141,23 +146,31 @@ class Grid:
 
         for shape in shapes:
             adjacent_squares = this.getAdjacentShapeSquares(shape)
-            min_adjacent_color = -1
+            adjacent_shapes = []
             for sq in adjacent_squares:
                 adjacent_shape = square_mapping[sq]
-                if adjacent_shape in color_mapping:
-                    min_adjacent_color = max(min_adjacent_color, color_mapping[adjacent_shape])
-            if min_adjacent_color == -1:
-                color_mapping[shape] = 0
-            else:
-                color_mapping[shape] = min_adjacent_color + 1
-            # color_mapping[shape] = i
-            # i += 6
-        print(color_mapping)
-        exit()
-        for shape in shapes:
-            shape.setColor(nthSunflowerColor(color_set[color_mapping[shape]]))
+                if adjacent_shape not in adjacent_shapes:
+                    adjacent_shapes.append(adjacent_shape)
+            adjacency[shape] = adjacent_shapes
+            adjacency_original[shape] = adjacent_shapes
 
-        print(color_mapping)
+        ordered: List[Shape] = []
+        while len(adjacency) > 0:
+            # Find a shape with degree <= 5
+            for shape in adjacency:
+                if len(adjacency[shape]) <= 5:
+                    break
+            ordered.append(shape)
+            adjacent = adjacency[shape]
+            for s in adjacent:
+                adjacency[s] = [x for x in adjacency[s] if x != shape]
+            del adjacency[shape]
+        print(ordered)
+        i = 1
+        for shape in shapes:
+            shape.setColor(nthSunflowerColor(i))
+            i += 6
+
         # Set the first shape to "1"
         # Look through
 
