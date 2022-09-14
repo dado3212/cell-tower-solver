@@ -4,7 +4,7 @@ import random, math
 from Grid import Grid, easyGrid
 from Utils import is_number_composable
 from Solver import solve
-from Words import global_word_list, is_word_composable
+from Words import global_word_list, is_word_composable, is_valid_word
 from Types import Square
 
 def createUniqueFromEmptyGrid(grid: Grid) -> Tuple[Grid, List[Shape]]:

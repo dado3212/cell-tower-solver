@@ -122,10 +122,19 @@ class Grid:
             print(row)
 
     def printShapes(this, shapes: List[Shape]) -> None:
+        # 1 - blue
+        # 2 - neon green
+        # 3 - pink
+        # 4 - teal?
+        # 5 - orange
+        # 6 - purple
+        # Set colors
         i = 1
         for shape in shapes:
             shape.setColor(nthSunflowerColor(i))
             i += 6
+
+        # Actually print from the set colors
         maxHeight = 0
         maxWidth = 0
         for square in this.squares:
