@@ -124,9 +124,12 @@ from Words import global_word_list
 #
 # Above 22x22 we start hitting recursion depth problems
 # when building the pattern.
-# When doing >20x20 grids, (4, 8) struggles to find unique
-# setups, likely due to the 4/8 relative primality
-empty_grid = easyGrid(20, 20, 4, 12)
+# When doing large grids, (4, 8) struggles to find unique
+# setups, due to the tendency for shorter words suffixed
+# in "ing" and other things that can easily join
+# neighboring short words. Raising the upper bound can
+# help to resolve this
+empty_grid = easyGrid(22, 22, 4, 12)
 grid, shapes = createUniqueFromEmptyGrid(empty_grid)
 grid.printBlank()
 grid.printShapes(shapes)

@@ -8,10 +8,18 @@ def is_word_composable(word: str, minSize: int, maxSize: int) -> bool:
     wordLength = len(word)
     if wordLength < minSize * 2:
         return False
+    elif wordLength > maxSize:
+        raise ValueError('This should never happen')
     else:
-        print(word[0:minSize])
-        print(word[minSize:])
-        return is_valid_word(word[0:minSize]) and is_valid_word(word[minSize:])
+        for smallWordLength in range(minSize, int(wordLength / 2) + 1):
+            # At the beginning
+            if (is_valid_word(word[0:smallWordLength]) and is_valid_word(word[smallWordLength:])):
+                return True
+            # At the end (if it's different)
+            if smallWordLength != wordLength/2:
+                if (is_valid_word(word[-smallWordLength:]) and is_valid_word(word[:-smallWordLength])):
+                    return True
+    return False
 
 
 def is_valid_word(word: str) -> bool:

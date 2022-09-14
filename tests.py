@@ -19,9 +19,12 @@ class WordTest(unittest.TestCase):
 
     def test_is_composable(self):
         self.assertTrue(is_word_composable('override', 4, 8))
-        self.assertFalse(is_word_composable('underdog', 4, 8))
+        self.assertFalse(is_word_composable('typewriter', 5, 10))
         self.assertFalse(is_word_composable('overzzbg', 4, 8))
-        # self.assertTrue(is_word_composable('underdog', 4, 8))
+        self.assertTrue(is_word_composable('typewriter', 4, 10))
+        self.assertTrue(is_word_composable('override', 4, 10))
+        # For some reason berries isn't in the w12 dictionary
+        # self.assertTrue(is_word_composable('strawberries', 4, 12))
 
 class ShapeTest(unittest.TestCase):
 

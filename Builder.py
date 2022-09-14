@@ -4,7 +4,7 @@ import random, math
 from Grid import Grid, easyGrid
 from Utils import is_number_composable
 from Solver import solve
-from Words import global_word_list
+from Words import global_word_list, is_word_composable
 from Types import Square
 
 def createUniqueFromEmptyGrid(grid: Grid) -> Tuple[Grid, List[Shape]]:
@@ -236,6 +236,10 @@ def getPossibleWords(grid: Grid, shapes: List[Shape]) -> List[str]:
         if length < grid.minSize or length > grid.maxSize:
             continue
 
+        # Composable words can't build a unique grid
+        if is_word_composable(word, grid.minSize, grid.maxSize):
+            continue
+
         if length in words_by_length:
             words_by_length[length].append(word)
         else:
@@ -252,9 +256,6 @@ def getPossibleWords(grid: Grid, shapes: List[Shape]) -> List[str]:
             needed[length] += 1
         else:
             needed[length] = 1
-
-    print(words_by_length[8])
-    exit()
 
     words = []
     for length in needed:
