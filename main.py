@@ -126,7 +126,7 @@ from Words import global_word_list
 # when building the pattern.
 # When doing >20x20 grids, (4, 8) struggles to find unique
 # setups, likely due to the 4/8 relative primality
-empty_grid = easyGrid(20, 20, 6, 8)
+empty_grid = easyGrid(20, 20, 4, 12)
 grid, shapes = createUniqueFromEmptyGrid(empty_grid)
 grid.printBlank()
 grid.printShapes(shapes)

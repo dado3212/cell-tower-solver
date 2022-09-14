@@ -3,6 +3,17 @@ from typing import List, Dict, Any
 
 _end = '_end_'
 
+# Currently only handles the 4/8 case
+def is_word_composable(word: str, minSize: int, maxSize: int) -> bool:
+    wordLength = len(word)
+    if wordLength < minSize * 2:
+        return False
+    else:
+        print(word[0:minSize])
+        print(word[minSize:])
+        return is_valid_word(word[0:minSize]) and is_valid_word(word[minSize:])
+
+
 def is_valid_word(word: str) -> bool:
     current_dict = trie
     for letter in word:

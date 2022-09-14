@@ -1,8 +1,8 @@
 import unittest
-from Words import chunk_matches_word
+from Words import chunk_matches_word, is_word_composable
 from Shape import Shape
 from Utils import is_number_composable
-from Grid import Grid
+from Grid import Grid, easyGrid
 from typing import List, Dict, Optional
 from Types import Square
 
@@ -16,6 +16,12 @@ class WordTest(unittest.TestCase):
         self.assertTrue(chunk_matches_word('hello', ['hell']))
         self.assertFalse(chunk_matches_word('hello', ['hell','lo']))
         self.assertFalse(chunk_matches_word('hello', ['h','e','a','l','l','o']))
+
+    def test_is_composable(self):
+        self.assertTrue(is_word_composable('override', 4, 8))
+        self.assertFalse(is_word_composable('underdog', 4, 8))
+        self.assertFalse(is_word_composable('overzzbg', 4, 8))
+        # self.assertTrue(is_word_composable('underdog', 4, 8))
 
 class ShapeTest(unittest.TestCase):
 

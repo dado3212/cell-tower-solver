@@ -17,7 +17,7 @@ def createUniqueFromEmptyGrid(grid: Grid) -> Tuple[Grid, List[Shape]]:
         shapes = buildShapePatternHelper(grid)
         grid.printShapes(shapes)
         is_valid = True
-        built_grid = build(shapes, True)
+        built_grid = build(grid, shapes, True)
         if built_grid is None:
             print("No grid")
             is_valid = False
@@ -37,7 +37,7 @@ def buildShapePattern(grid: Grid) -> List[Shape]:
         shapes = buildShapePatternHelper(grid)
         grid.printShapes(shapes)
         is_valid = True
-        built_grid = build(shapes, True)
+        built_grid = build(grid, shapes, True)
         if built_grid is None:
             print("No grid")
             is_valid = False
@@ -228,10 +228,14 @@ def buildGrid(mapping: Dict[Shape, str]) -> Grid:
 
 # For a list of shapes, this randomly pulls a set of matching length words
 # from the eligible word list.
-def getPossibleWords(shapes: List[Shape]) -> List[str]:
+def getPossibleWords(grid: Grid, shapes: List[Shape]) -> List[str]:
     words_by_length = dict()
     for word in global_word_list:
         length = len(word)
+        # We don't need words of other lengths
+        if length < grid.minSize or length > grid.maxSize:
+            continue
+
         if length in words_by_length:
             words_by_length[length].append(word)
         else:
@@ -249,6 +253,9 @@ def getPossibleWords(shapes: List[Shape]) -> List[str]:
         else:
             needed[length] = 1
 
+    print(words_by_length[8])
+    exit()
+
     words = []
     for length in needed:
         for i in range(0, needed[length]):
@@ -259,11 +266,11 @@ def getPossibleWords(shapes: List[Shape]) -> List[str]:
 # Takes in a pattern of shapes and tries to build a working grid
 # There's a more elegant way to do random building, but this currently
 # tends to work pretty well.
-def build(shapes: List[Shape], debug: bool = False) -> Optional[Grid]:
+def build(grid: Grid, shapes: List[Shape], debug: bool = False) -> Optional[Grid]:
     # For now, just assume the list of shapes is well formed
     num_wordlists = 5
     for i in range(num_wordlists):
-        words = getPossibleWords(shapes)
+        words = getPossibleWords(grid, shapes)
         if debug:
             print("Trying to build grid with words", words)
         mapping: Dict[str, List[Shape]] = dict()
