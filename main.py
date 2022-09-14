@@ -129,6 +129,7 @@ from Words import global_word_list
 # in "ing" and other things that can easily join
 # neighboring short words. Raising the upper bound can
 # help to resolve this
+
 empty_grid = easyGrid(22, 22, 4, 12)
 grid, shapes = createUniqueFromEmptyGrid(empty_grid)
 grid.printBlank()

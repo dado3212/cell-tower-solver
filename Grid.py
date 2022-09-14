@@ -128,11 +128,38 @@ class Grid:
         # 4 - teal?
         # 5 - orange
         # 6 - purple
+        # 9 - light blue
+        # 10 - yellow
+        # 21 - red
         # Set colors
-        i = 1
+        color_set = [21, 5, 10, 6, 1, 2, 14, 9]
+        color_mapping: Dict[Shape, int] = dict()
+        square_mapping: Dict[Square, Shape] = dict()
         for shape in shapes:
-            shape.setColor(nthSunflowerColor(i))
-            i += 6
+            for square in shape.squares:
+                square_mapping[square] = shape
+
+        for shape in shapes:
+            adjacent_squares = this.getAdjacentShapeSquares(shape)
+            min_adjacent_color = -1
+            for sq in adjacent_squares:
+                adjacent_shape = square_mapping[sq]
+                if adjacent_shape in color_mapping:
+                    min_adjacent_color = max(min_adjacent_color, color_mapping[adjacent_shape])
+            if min_adjacent_color == -1:
+                color_mapping[shape] = 0
+            else:
+                color_mapping[shape] = min_adjacent_color + 1
+            # color_mapping[shape] = i
+            # i += 6
+        print(color_mapping)
+        exit()
+        for shape in shapes:
+            shape.setColor(nthSunflowerColor(color_set[color_mapping[shape]]))
+
+        print(color_mapping)
+        # Set the first shape to "1"
+        # Look through
 
         # Actually print from the set colors
         maxHeight = 0
