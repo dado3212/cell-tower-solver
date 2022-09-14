@@ -28,7 +28,7 @@ with open('./raw/words.json') as f:
 with open('./raw/wlist_match2.txt') as f:
     words = [word.rstrip() for word in f.readlines()]
     # Do some cleanup
-    words = [word for word in words if word.isalpha() and len(word) > 4]
+    words = [word for word in words if word.isalpha() and len(word) >= 4]
 
     trie = build_trie(words)
 
@@ -40,7 +40,7 @@ with open('./raw/wlist_match2.txt') as f:
 with open('./raw/wlist_match12.txt') as f:
     words = [word.rstrip() for word in f.readlines()]
     # Do some cleanup
-    words = [word for word in words if word.isalpha() and len(word) > 4]
+    words = [word for word in words if word.isalpha() and len(word) >= 4]
 
     trie = build_trie(words)
 
